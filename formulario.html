@@ -233,88 +233,112 @@
         .wizard-steps {
             list-style: none;
             padding: 0;
-            margin: 2rem 0;
+            margin: 1.5rem 0 2.5rem 0;
             display: flex;
             justify-content: space-between;
             position: relative;
+            background: rgba(0, 83, 164, 0.03);
+            border-radius: 12px;
+            padding: 1.25rem 0.75rem;
+            border: 1px solid rgba(0, 83, 164, 0.08);
         }
 
         .wizard-steps::before {
             content: '';
             position: absolute;
-            top: 20px; /* Adjusted for smaller circle */
+            top: 2rem;
             left: 10%;
             right: 10%;
-            height: 2px;
+            height: 4px;
             background: var(--border-color);
+            border-radius: 4px;
             z-index: 0;
+            opacity: 0.4;
+        }
+
+        .wizard-progress-bar {
+            position: absolute;
+            top: 2rem;
+            left: 10%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--brand-primary), #00A3FF);
+            border-radius: 4px;
+            z-index: 1;
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            width: 0%;
         }
 
         .wizard-step {
-            z-index: 1;
-            background: transparent;
-            padding: 0 5px; /* Reduced from 10px */
+            z-index: 2;
+            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
             cursor: pointer;
-            transition: all 0.3s;
-            flex: 1; /* Ensure they share space */
-            min-width: 80px; /* Minimum width to keep them readable */
+            transition: all 0.3s ease;
+            flex: 1;
         }
 
         .wizard-index {
-            width: 40px; /* Reduced from 50px */
-            height: 40px; /* Reduced from 50px */
-            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             background: white;
             border: 2px solid var(--border-color);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
+            font-size: 0.9rem;
             color: var(--text-muted);
-            margin-bottom: 0.5rem;
-            transition: all 0.2s ease;
-        }
-
-        .wizard-step.active .wizard-index {
-            border-color: var(--brand-primary);
-            color: var(--brand-primary);
-            box-shadow: 0 0 0 5px rgba(0, 83, 164, 0.1);
-        }
-
-        .wizard-step.completed .wizard-index {
-            background: var(--brand-primary);
-            border-color: var(--brand-primary);
-            color: white;
-        }
-
-        .wizard-label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
-
-        .wizard-step.active .wizard-label {
-            color: var(--brand-primary);
-        }
-        .wizard-index-label {
+            margin-bottom: 0.6rem;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             position: relative;
             z-index: 2;
         }
 
+        .wizard-step.active .wizard-index {
+            background: var(--brand-primary);
+            border-color: var(--brand-primary);
+            color: white;
+            transform: scale(1.2) translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 83, 164, 0.25);
+        }
+
+        .wizard-step.completed .wizard-index {
+            background: #198754;
+            border-color: #198754;
+            color: white;
+        }
+
+        .wizard-step.warning .wizard-index {
+            background: #ffc107;
+            border-color: #ffc107;
+            color: #000;
+        }
+
         .wizard-label {
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-size: 0.65rem;
+            font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
+            letter-spacing: 0.03em;
+            text-align: center;
+            transition: all 0.3s ease;
+            max-width: 90px;
+            line-height: 1.2;
         }
 
         .wizard-step.active .wizard-label {
             color: var(--brand-primary);
+            transform: translateY(-2px);
         }
+
+        .wizard-step.completed .wizard-label {
+            color: #198754;
+        }
+
 
     .step-card {
       border: 0;
@@ -742,20 +766,25 @@
             <!-- Inscrição Wizard Header (The steps) -->
             <div class="card p-4 mb-4">
                 <ol class="wizard-steps m-0" id="wizardSteps" role="tablist">
+                    <div class="wizard-progress-bar" id="wizardProgressBar"></div>
                     <li class="wizard-step active" data-step="0">
-                        <span class="wizard-index">1</span>
+                        <span class="wizard-index" data-step-index="1">1</span>
                         <span class="wizard-label">Identificação</span>
                     </li>
                     <li class="wizard-step" data-step="1">
-                        <span class="wizard-index">2</span>
+                        <span class="wizard-index" data-step-index="2">2</span>
                         <span class="wizard-label">Endereço</span>
                     </li>
                     <li class="wizard-step" data-step="2">
-                        <span class="wizard-index">3</span>
+                        <span class="wizard-index" data-step-index="3">3</span>
                         <span class="wizard-label">Profissional</span>
                     </li>
                     <li class="wizard-step" data-step="3">
-                        <span class="wizard-index">4</span>
+                        <span class="wizard-index" data-step-index="4">4</span>
+                        <span class="wizard-label">Inclusão</span>
+                    </li>
+                    <li class="wizard-step" data-step="4">
+                        <span class="wizard-index" data-step-index="5">5</span>
                         <span class="wizard-label">Revisão</span>
                     </li>
                 </ol>
@@ -939,142 +968,11 @@
             </div>
           </div>
 
-          <!-- Restored Inclusão e Acessibilidade -->
-          <div class="section-block">
-            <h3 class="section-title">Inclusão e acessibilidade</h3>
-            <div class="row g-3">
-              <div class="col-md-4">
-                <label for="cotasPPNI" class="form-label required">Deseja concorrer às vagas PPNI?</label>
-                <select id="cotasPPNI" name="cotasPPNI" class="form-select" data-prefill="{{ $json.cotasPPNI }}" required>
-                  <option value="">Selecione...</option>
-                  <option value="Sim">Sim</option>
-                  <option value="Não">Não</option>
-                </select>
-                <div id="ppniDocsInfo" class="form-text mt-1 hidden text-primary fw-bold">
-                  * Você deverá anexar a documentação de heteroidentificação na aba "Documentação".
-                </div>
-              </div>
-              <div class="col-md-4">
-                <label for="is_pcd" class="form-label required">Pessoa com deficiência (PCD)?</label>
-                <select id="is_pcd" name="is_pcd" class="form-select" data-prefill="{{ $json.is_pcd }}" required>
-                  <option value="">Selecione...</option>
-                  <option value="Sim">Sim</option>
-                  <option value="Não">Não</option>
-                </select>
-              </div>
-              <div class="col-md-4 hidden" id="tipoPcdGroup">
-                <label for="tipo_pcd" class="form-label">Tipo de deficiência</label>
-                <input type="text" class="form-control" id="tipo_pcd" name="tipo_pcd" value="{{ $json.tipo_pcd }}" data-force-required="true" />
-              </div>
-              <div class="col-md-4 hidden" id="pcdCidGroup">
-                <label for="pcd_cid" class="form-label">CID (opcional)</label>
-                <input type="text" class="form-control" id="pcd_cid" name="pcd_cid" value="{{ $json.pcd_cid }}" />
-              </div>
-              <div class="col-md-4">
-                <label for="condicao_especial_opcao" class="form-label">Necessita de condição especial para realização das etapas?</label>
-                <div class="d-flex gap-3">
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="condicao_especial" id="condicao_especial_sim" value="SIM" {{ $json.condicao_especial === 'SIM' ? 'checked' : '' }} />
-                      <label class="form-check-label" for="condicao_especial_sim">Sim</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="condicao_especial" id="condicao_especial_nao" value="NAO" {{ $json.condicao_especial === 'NAO' ? 'checked' : '' }} />
-                      <label class="form-check-label" for="condicao_especial_nao">Não</label>
-                    </div>
-                </div>
-              </div>
-              <div class="col-md-8 hidden" id="necessidadeGroup">
-                <label for="necessidade" class="form-label">Qual a necessidade?</label>
-                <input type="text" class="form-control" id="necessidade" name="necessidade" value="{{ $json.necessidade }}" data-force-required="true" />
-              </div>
-            </div>
-          </div>
 
-          <!-- Restored Experiências Adicionais -->
-          <div class="section-block">
-            <h3 class="section-title">Experiências adicionais</h3>
-            <div class="row g-3">
-              <div class="col-md-4">
-                <span class="form-label">Já atuou como jurado(a)?</span>
-                <div class="d-flex gap-3">
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="jurado_funcao" id="jurado_sim" value="SIM" {{ $json.foi_jurado === 'SIM' ? 'checked' : '' }} />
-                    <label class="form-check-label" for="jurado_sim">Sim</label>
-                  </div>
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="jurado_funcao" id="jurado_nao" value="NAO" {{ $json.foi_jurado === 'NAO' ? 'checked' : '' }} />
-                    <label class="form-check-label" for="jurado_nao">Não</label>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-8 hidden" id="juradoDetalhes">
-                <label for="jurado_periodo" class="form-label">Informações sobre atuação como jurado(a)</label>
-                <input type="text" class="form-control" id="jurado_periodo" name="jurado_periodo"
-                  placeholder="Tribunal, período ou outros detalhes" value="{{ $json.jurado_periodo }}" />
-              </div>
-              <div class="col-md-4">
-                <span class="form-label">Possui algum outro vínculo com o serviço público?</span>
-                <div class="d-flex gap-3">
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="vinculo_publico_opcao" id="vinculo_publico_sim" value="Sim" {{ $json.vinculo_publico === 'Sim' ? 'checked' : '' }} />
-                    <label class="form-check-label" for="vinculo_publico_sim">Sim</label>
-                  </div>
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="vinculo_publico_opcao" id="vinculo_publico_nao" value="Não" {{ $json.vinculo_publico === 'Não' ? 'checked' : '' }} />
-                    <label class="form-check-label" for="vinculo_publico_nao">Não</label>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12 hidden" id="qualVinculoGroup">
-                <label for="qual_vinculo" class="form-label">Qual vínculo?</label>
-                <input type="text" class="form-control text-uppercase" id="qual_vinculo" name="qual_vinculo"
-                  value="{{ $json.qual_vinculo }}" data-force-required="true" />
-              </div>
-              <div class="col-12 hidden" id="vinculoCargoGroup">
-                <label for="vinculo_cargo" class="form-label">Cargo</label>
-                <input type="text" class="form-control text-uppercase" id="vinculo_cargo" name="vinculo_cargo"
-                  value="{{ String($json.vinculo_cargo ?? '').trim().toUpperCase() }}" data-force-required="true" />
-              </div>
-              <!-- Hidden summary inputs for toggle logic -->
-              <input type="hidden" id="foi_jurado" name="foi_jurado" value="{{ $json.foi_jurado }}" />
-              <input type="hidden" id="vinculo_publico" name="vinculo_publico" value="{{ $json.vinculo_publico }}" />
-            </div>
-          </div>
 
-          <div class="section-block hidden" id="militarGroup">
-                <span class="form-label required">Serviço militar obrigatório quitado?</span>
-                <div class="d-flex gap-3">
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="militar" id="militar_sim" value="SIM" data-force-required="true" {{ $json.militar === 'SIM' ? 'checked' : '' }} />
-                    <label class="form-check-label" for="militar_sim">Sim</label>
-                  </div>
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="militar" id="militar_nao" value="NAO" data-force-required="true" {{ $json.militar === 'NAO' ? 'checked' : '' }} />
-                    <label class="form-check-label" for="militar_nao">Não</label>
-                  </div>
-                </div>
-          </div>
-          
-          <div id="alistamentoWrapper" class="section-block hidden">
-            <h3 class="section-title">Certificado de reservista</h3>
-            <div class="row g-3">
-              <div class="col-md-4">
-                <label for="alistamento_numero" class="form-label">Número</label>
-                <input type="text" class="form-control" id="alistamento_numero" name="alistamento_numero" maxlength="12"
-                  inputmode="numeric" data-numeric-only="true" value="{{ $json.alistamento_numero }}" data-force-required="true" />
-              </div>
-              <div class="col-md-4">
-                <label for="alistamento_orgao" class="form-label">Órgão emissor</label>
-                <input type="text" class="form-control" id="alistamento_orgao" name="alistamento_orgao"
-                  value="{{ $json.alistamento_orgao }}" data-force-required="true" />
-              </div>
-              <div class="col-md-4">
-                <label for="alistamento_data" class="form-label">Data de emissão</label>
-                <input type="date" class="form-control" id="alistamento_data" name="alistamento_data"
-                  value="{{ $json.alistamento_data }}" data-force-required="true" />
-              </div>
-            </div>
-          </div>
+
+
+
         </div>
         <div class="card-footer bg-transparent border-top-0 pt-0">
           <div class="wizard-controls">
@@ -1245,9 +1143,112 @@
                   pattern="\d{0,4}" title="Informe apenas números" data-numeric-only="true" value="{{ $json.zona }}"
                   required data-force-required="true" />
               </div>
+              <div class="col-md-4">
+                <label for="secao" class="form-label required">Seção</label>
+                <input type="text" class="form-control" id="secao" name="secao" maxlength="4" inputmode="numeric"
                   pattern="\d{0,4}" title="Informe apenas números" data-numeric-only="true" value="{{ $json.secao }}"
                   required data-force-required="true" />
               </div>
+            </div>
+          </div>
+
+          <!-- Militar/Alistamento (Moved from Step 0) -->
+          <div class="section-block hidden" id="militarGroup">
+            <h3 class="section-title">Serviço Militar</h3>
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label required">Possui certificado de reservista ou dispensa?</label>
+                <div class="d-flex gap-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="militar" id="militar_sim" value="SIM" {{ $json.militar === 'SIM' ? 'checked' : '' }} />
+                    <label class="form-check-label" for="militar_sim">Sim</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="militar" id="militar_nao" value="NAO" {{ $json.militar === 'NAO' ? 'checked' : '' }} />
+                    <label class="form-check-label" for="militar_nao">Não</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row g-3 ms-0 hidden" id="alistamentoWrapper">
+                <div class="col-md-5">
+                  <label for="alistamento_numero" class="form-label required">Número do documento</label>
+                  <input type="text" class="form-control" id="alistamento_numero" name="alistamento_numero" maxlength="20"
+                    placeholder="Número" value="{{ $json.alistamento_numero }}" data-force-required="true" />
+                </div>
+                <div class="col-md-4">
+                  <label for="alistamento_orgao" class="form-label required">Órgão expedidor</label>
+                  <input type="text" class="form-control text-uppercase" id="alistamento_orgao" name="alistamento_orgao"
+                    maxlength="20" placeholder="Ex: EB" value="{{ $json.alistamento_orgao }}"
+                    data-force-required="true" />
+                </div>
+                <div class="col-md-3">
+                  <label for="alistamento_data" class="form-label required">Data de expedição</label>
+                  <input type="date" class="form-control" id="alistamento_data" name="alistamento_data"
+                    value="{{ $json.alistamento_data }}" data-force-required="true" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Experiências Adicionais (Moved from Step 0) -->
+          <div class="section-block">
+            <h3 class="section-title">Experiências e outros vínculos</h3>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <span class="form-label">Já atuou como jurado(a)?</span>
+                <div class="d-flex gap-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="jurado_funcao" id="jurado_sim" value="SIM" {{ $json.foi_jurado === 'SIM' ? 'checked' : '' }} />
+                    <label class="form-check-label" for="jurado_sim">Sim</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="jurado_funcao" id="jurado_nao" value="NAO" {{ $json.foi_jurado === 'NAO' ? 'checked' : '' }} />
+                    <label class="form-check-label" for="jurado_nao">Não</label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-8 hidden" id="juradoDetalhes">
+                <label for="jurado_periodo" class="form-label">Informações sobre atuação como jurado(a)</label>
+                <input type="text" class="form-control" id="jurado_periodo" name="jurado_periodo"
+                  placeholder="Tribunal, período ou outros detalhes" value="{{ $json.jurado_periodo }}" />
+              </div>
+              <div class="col-md-4">
+                <span class="form-label">Possui algum outro vínculo com o serviço público?</span>
+                <div class="d-flex gap-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="vinculo_publico_opcao" id="vinculo_publico_sim" value="Sim" {{ $json.vinculo_publico === 'Sim' ? 'checked' : '' }} />
+                    <label class="form-check-label" for="vinculo_publico_sim">Sim</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="vinculo_publico_opcao" id="vinculo_publico_nao" value="Não" {{ $json.vinculo_publico === 'Não' ? 'checked' : '' }} />
+                    <label class="form-check-label" for="vinculo_publico_nao">Não</label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 hidden" id="qualVinculoGroup">
+                <label for="qual_vinculo" class="form-label">Qual vínculo?</label>
+                <input type="text" class="form-control text-uppercase" id="qual_vinculo" name="qual_vinculo"
+                  value="{{ $json.qual_vinculo }}" data-force-required="true" />
+              </div>
+              <div class="col-12 hidden" id="vinculoCargoGroup">
+                <label for="vinculo_cargo" class="form-label">Cargo</label>
+                <input type="text" class="form-control text-uppercase" id="vinculo_cargo" name="vinculo_cargo"
+                  value="{{ String($json.vinculo_cargo ?? '').trim().toUpperCase() }}" data-force-required="true" />
+              </div>
+              <div class="col-12 hidden" id="vinculoOrgaoGroup">
+                <label for="vinculo_orgao" class="form-label">Órgão</label>
+                <input type="text" class="form-control text-uppercase" id="vinculo_orgao" name="vinculo_orgao"
+                  value="{{ String($json.vinculo_orgao ?? '').trim().toUpperCase() }}" data-force-required="true" />
+              </div>
+              <div class="col-12 hidden" id="vinculoTempoGroup">
+                <label for="vinculo_tempo_servico" class="form-label">Tempo de serviço</label>
+                <input type="text" class="form-control" id="vinculo_tempo_servico" name="vinculo_tempo_servico"
+                  value="{{ String($json.vinculo_tempo ?? $json.vinculo_tempo_servico ?? '').trim() }}" data-force-required="true" />
+              </div>
+              <!-- Hidden summary inputs for toggle logic -->
+              <input type="hidden" id="foi_jurado" name="foi_jurado" value="{{ $json.foi_jurado }}" />
+              <input type="hidden" id="vinculo_publico" name="vinculo_publico" value="{{ $json.vinculo_publico }}" />
             </div>
           </div>
         <div class="card-footer bg-transparent border-top-0 pt-0">
@@ -1258,7 +1259,72 @@
           </div>
         </div>
       </section>
+
       <section class="card step-card d-none" data-step-panel="3">
+        <div class="card-header">
+          <h2>Inclusão e acessibilidade</h2>
+        </div>
+        <div class="card-body">
+          <div class="section-block">
+            <h3 class="section-title">Cotas e necessidades especiais</h3>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label for="cotasPPNI" class="form-label required">Deseja concorrer às vagas PPNI?</label>
+                <select id="cotasPPNI" name="cotasPPNI" class="form-select" data-prefill="{{ $json.cotasPPNI }}" required>
+                  <option value="">Selecione...</option>
+                  <option value="Sim">Sim</option>
+                  <option value="Não">Não</option>
+                </select>
+                <div id="ppniDocsInfo" class="form-text mt-1 hidden text-primary fw-bold">
+                  * Você deverá anexar a documentação de heteroidentificação na aba "Documentação".
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="is_pcd" class="form-label required">Pessoa com deficiência (PCD)?</label>
+                <select id="is_pcd" name="is_pcd" class="form-select" data-prefill="{{ $json.is_pcd }}" required>
+                  <option value="">Selecione...</option>
+                  <option value="Sim">Sim</option>
+                  <option value="Não">Não</option>
+                </select>
+              </div>
+              <div class="col-md-4 hidden" id="tipoPcdGroup">
+                <label for="tipo_pcd" class="form-label">Tipo de deficiência</label>
+                <input type="text" class="form-control" id="tipo_pcd" name="tipo_pcd" value="{{ $json.tipo_pcd }}" data-force-required="true" />
+              </div>
+              <div class="col-md-4 hidden" id="pcdCidGroup">
+                <label for="pcd_cid" class="form-label">CID (opcional)</label>
+                <input type="text" class="form-control" id="pcd_cid" name="pcd_cid" value="{{ $json.pcd_cid }}" />
+              </div>
+              <div class="col-md-4">
+                <label for="condicao_especial_opcao" class="form-label">Necessita de condição especial para realização das etapas?</label>
+                <div class="d-flex gap-3">
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="condicao_especial" id="condicao_especial_sim" value="SIM" {{ $json.condicao_especial === 'SIM' ? 'checked' : '' }} />
+                      <label class="form-check-label" for="condicao_especial_sim">Sim</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="condicao_especial" id="condicao_especial_nao" value="NAO" {{ $json.condicao_especial === 'NAO' ? 'checked' : '' }} />
+                      <label class="form-check-label" for="condicao_especial_nao">Não</label>
+                    </div>
+                </div>
+              </div>
+              <div class="col-md-8 hidden" id="necessidadeGroup">
+                <label for="necessidade" class="form-label">Qual a necessidade?</label>
+                <input type="text" class="form-control" id="necessidade" name="necessidade" value="{{ $json.necessidade }}" data-force-required="true" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-transparent border-top-0 pt-0">
+          <div class="wizard-controls">
+            <button type="button" class="btn btn-outline-secondary" data-action="prev">Voltar</button>
+            <div class="spacer"></div>
+            <button type="button" class="btn btn-primary" data-action="next">Avançar</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card step-card d-none" data-step-panel="4">
         <div class="card-header">
           <h2>Revisão e envio</h2>
         </div>
@@ -1381,6 +1447,39 @@
                   <input type="file" class="upload-input" id="doc_militar" data-form-field="doc_militar" accept=".pdf"
                     data-force-required="true" aria-label="Quitação do serviço militar" />
                   <label class="upload-button" for="doc_militar">Selecionar arquivo</label>
+                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
+                </div>
+              </div>
+              <div class="col-sm-6 col-lg-4 hidden" id="docPpniGroup">
+                <div class="upload-card" data-upload-card>
+                  <div class="upload-emoji" aria-hidden="true">✊🏾</div>
+                  <p class="upload-title">Heteroidentificação (PPNI)</p>
+                  <p class="upload-instruction">Conforme edital. Anexe arquivo em PDF.</p>
+                  <input type="file" class="upload-input" id="doc_ppni" data-form-field="doc_ppni" accept=".pdf"
+                    data-force-required="true" aria-label="Documentação de Heteroidentificação" />
+                  <label class="upload-button" for="doc_ppni">Selecionar arquivo</label>
+                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
+                </div>
+              </div>
+              <div class="col-sm-6 col-lg-4 hidden" id="docPcdGroup">
+                <div class="upload-card" data-upload-card>
+                  <div class="upload-emoji" aria-hidden="true">♿</div>
+                  <p class="upload-title">Laudo Médico (PCD)</p>
+                  <p class="upload-instruction">Conforme edital. Anexe arquivo em PDF.</p>
+                  <input type="file" class="upload-input" id="doc_pcd" data-form-field="doc_pcd" accept=".pdf"
+                    data-force-required="true" aria-label="Laudo Médico PCD" />
+                  <label class="upload-button" for="doc_pcd">Selecionar arquivo</label>
+                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
+                </div>
+              </div>
+              <div class="col-sm-6 col-lg-4 hidden" id="docJuradoGroup">
+                <div class="upload-card" data-upload-card>
+                  <div class="upload-emoji" aria-hidden="true">⚖️</div>
+                  <p class="upload-title">Certificado de Jurado(a)</p>
+                  <p class="upload-instruction">Comprovação de atuação. Anexe arquivo em PDF.</p>
+                  <input type="file" class="upload-input" id="doc_jurado" data-form-field="doc_jurado" accept=".pdf"
+                    data-force-required="true" aria-label="Documentação de Jurado" />
+                  <label class="upload-button" for="doc_jurado">Selecionar arquivo</label>
                   <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
                 </div>
               </div>
@@ -2422,6 +2521,11 @@
     };
 
     const updateWizardStepStates = () => {
+      // Update Progress Bar
+      const progress = (currentStep / (wizardSteps.length - 1)) * 100;
+      const progressBar = document.getElementById('wizardProgressBar');
+      if (progressBar) progressBar.style.width = `${progress}%`;
+
       wizardSteps.forEach((step, i) => {
         const isActive = i === currentStep;
         const wasVisited = visitedSteps.has(i);
@@ -2429,11 +2533,14 @@
         const shouldShowStatus = (wasVisited || i < currentStep) && !isActive;
         const isCompleted = shouldShowStatus && !hasPending && i < currentStep;
         const isWarning = shouldShowStatus && hasPending;
+        
         step.classList.toggle('active', isActive);
         step.classList.toggle('completed', isCompleted);
         step.classList.toggle('warning', isWarning);
+        
         step.setAttribute('aria-selected', isActive ? 'true' : 'false');
         step.setAttribute('tabindex', isActive ? '0' : '-1');
+        
         const indexLabel = step.querySelector('.wizard-index');
         if (indexLabel) {
           const original = indexLabel.dataset.stepIndex || String(i + 1);
@@ -2809,19 +2916,15 @@
 
     const updateMilitar = () => {
       const sexo = document.getElementById('sexo');
-      const show = sexo && sexo.value === 'Masculino';
+      const show = sexo && (sexo.value === 'Masculino' || sexo.value === 'MASCULINO');
       const wrapper = document.getElementById('alistamentoWrapper');
       const docGroup = document.getElementById('docMilitarGroup');
       const militarGroup = document.getElementById('militarGroup');
+      
       toggleHiddenGroup(show, militarGroup);
       toggleHiddenGroup(show, wrapper);
       toggleHiddenGroup(show, docGroup);
-      if (docGroup) {
-        const docCard = docGroup.querySelector('.upload-card');
-        if (docCard) {
-          docCard.classList.toggle('required', show);
-        }
-      }
+
       if (!show) {
         document.querySelectorAll('input[name="militar"]').forEach((input) => {
           input.checked = false;
@@ -2843,19 +2946,25 @@
       const juradoSim = document.getElementById('jurado_sim');
       const juradoNao = document.getElementById('jurado_nao');
       const detalhes = document.getElementById('juradoDetalhes');
-      const docs = document.getElementById('juradoDocs');
-      const hasSelection = juradoSim.checked || juradoNao.checked;
-      document.getElementById('foi_jurado').value = hasSelection ? (juradoSim.checked ? 'SIM' : 'NAO') : '';
-      toggleHiddenGroup(juradoSim.checked, detalhes);
-      toggleHiddenGroup(juradoSim.checked, docs);
-      if (!juradoSim.checked) {
+      const docs = document.getElementById('docJuradoGroup');
+      const hasSelection = (juradoSim && juradoSim.checked) || (juradoNao && juradoNao.checked);
+      
+      if (document.getElementById('foi_jurado')) {
+        document.getElementById('foi_jurado').value = hasSelection ? (juradoSim.checked ? 'SIM' : 'NAO') : '';
+      }
+      
+      toggleHiddenGroup(juradoSim && juradoSim.checked, detalhes);
+      toggleHiddenGroup(juradoSim && juradoSim.checked, docs);
+
+      if (juradoSim && !juradoSim.checked) {
         if (detalhes) {
           detalhes.querySelectorAll('input').forEach((input) => {
             input.value = '';
           });
         }
-        if (docs) {
-          docs.querySelectorAll('.upload-input').forEach(resetUploadIndicator);
+        const docJurado = document.getElementById('doc_jurado');
+        if (docJurado) {
+          resetUploadIndicator(docJurado);
         }
       }
     };
@@ -2890,26 +2999,17 @@
       
       const group = document.getElementById('tipoPcdGroup');
       const cid = document.getElementById('pcdCidGroup');
-      const docsGroup = document.getElementById('pcdDocs');
+      const docsGroup = document.getElementById('docPcdGroup');
       
       toggleHiddenGroup(isYes, group);
       toggleHiddenGroup(isYes, cid);
       toggleHiddenGroup(isYes, docsGroup);
       
-      if (docsGroup) {
-        docsGroup.querySelectorAll('.upload-card').forEach((card) => {
-          const input = card.querySelector('.upload-input');
-          if (input) {
-            input.toggleAttribute('required', isYes && input.dataset.forceRequired === 'true');
-            card.classList.toggle('required', isYes && input.dataset.forceRequired === 'true');
-          }
-        });
-      }
-      
       if (!isYes) {
         if (group) group.querySelector('input').value = '';
         if (cid) cid.querySelector('input').value = '';
-        if (docsGroup) docsGroup.querySelectorAll('.upload-input').forEach(resetUploadIndicator);
+        const docPcdInput = document.getElementById('doc_pcd');
+        if (docPcdInput) resetUploadIndicator(docPcdInput);
       }
     };
 
@@ -2917,23 +3017,14 @@
       const ppni = document.getElementById('cotasPPNI');
       const isYes = ppni && ppni.value.toUpperCase() === 'SIM';
       const info = document.getElementById('ppniDocsInfo');
-      const docsGroup = document.getElementById('ppniDocs');
+      const docsGroup = document.getElementById('docPpniGroup');
       
       toggleHiddenGroup(isYes, info);
       toggleHiddenGroup(isYes, docsGroup);
       
-      if (docsGroup) {
-        docsGroup.querySelectorAll('.upload-card').forEach((card) => {
-          const input = card.querySelector('.upload-input');
-          if (input) {
-            input.toggleAttribute('required', isYes);
-            card.classList.toggle('required', isYes);
-          }
-        });
-      }
-      
       if (!isYes && docsGroup) {
-        docsGroup.querySelectorAll('.upload-input').forEach(resetUploadIndicator);
+        const docPpniInput = document.getElementById('doc_ppni');
+        if (docPpniInput) resetUploadIndicator(docPpniInput);
       }
     };
 
@@ -3378,18 +3469,11 @@
             { label: 'Comprovante de residência', name: 'doc_residencia' },
             { label: 'Quitação eleitoral', name: 'doc_quitacao_eleitoral' },
             { label: 'Quitação militar', name: 'doc_militar' },
-            { label: 'Certidão jurado', name: 'doc_jurado' },
-            { label: 'Certidão jurado (art. 440)', name: 'doc_jurado_440' },
-            { label: 'Comprovação escolaridade', name: 'doc_escolaridade' },
-            { label: 'Experiência / títulos', name: 'doc_curriculo' },
-            { label: 'Declaração heteroidentificação', name: 'het_declaracao' },
-            { label: 'Documento heteroidentificação', name: 'het_id' },
-            { label: 'Foto frente', name: 'het_frente' },
-            { label: 'Foto perfil', name: 'het_perfil' },
-            { label: 'Vídeo', name: 'het_video' },
-            { label: 'Laudo médico', name: 'pcd_laudo' },
-            { label: 'Declaração PCD', name: 'pcd_declaracao' },
-            { label: 'Exames complementares', name: 'pcd_exames' },
+            { label: 'Heteroidentificação (PPNI)', name: 'doc_ppni' },
+            { label: 'Laudo médico (PCD)', name: 'doc_pcd' },
+            { label: 'Certificado de jurado(a)', name: 'doc_jurado' },
+            { label: 'Escolaridade e Requisitos', name: 'doc_escolaridade' },
+            { label: 'Anexo V e Comprovantes', name: 'doc_curriculo' },
           ],
         },
       ];
@@ -3718,10 +3802,10 @@
         .forEach((input) => input.addEventListener('change', updateJurado));
       document
         .querySelectorAll('input[name="vinculo_publico_opcao"]')
-        .forEach((input) => input.addEventListener('change', updateVinculo));
+        .forEach((input) => input.addEventListener('change', updateVinculoPublico));
       document
         .querySelectorAll('input[name="condicao_especial"]')
-        .forEach((input) => input.addEventListener('change', updateNecessidade));
+        .forEach((input) => input.addEventListener('change', updateCondicaoEspecial));
       const cotasSelect = document.getElementById('cotasPPNI');
       if (cotasSelect) cotasSelect.addEventListener('change', updatePPNI);
       const emailInput = document.getElementById('email');
