@@ -1,0 +1,3053 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SAD Portal • Painel Administrativo</title>
+    <link rel="icon"
+        href="https://statics.recife.pe.gov.br/images/dynamics/logo_gestao_pcr.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root {
+            --brand-primary: #0053a4;
+            --brand-secondary: #003a73;
+            --brand-highlight: #00a3ff;
+            --brand-accent: #f8c12c;
+            --surface-bg: #f4f7f6;
+            --surface-white: #ffffff;
+            --border-color: #dee2e6;
+            --text-main: #1b263b;
+            --text-muted: #6c757d;
+        }
+
+        body {
+            font-family: "Public Sans", sans-serif;
+            background-color: var(--surface-bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, var(--brand-secondary) 0%, #002d5a 100%);
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 1000;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-logo {
+            max-width: 140px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        .sidebar-label {
+            display: block;
+            margin-top: 0.75rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.6;
+        }
+
+        .nav-menu {
+            padding: 1.5rem 0;
+            flex-grow: 1;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .nav-menu::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-section-label {
+            padding: 0.5rem 1.75rem;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255, 255, 255, 0.35);
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.25rem 1rem;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            position: relative;
+            font-size: 0.92rem;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link.active {
+            background-color: var(--brand-highlight);
+            box-shadow: 0 4px 12px rgba(0, 163, 255, 0.3);
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            flex-shrink: 0;
+            background-color: var(--brand-highlight);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            aspect-ratio: 1/1;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 2.5rem;
+            transition: all 0.3s;
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-weight: 700;
+            color: var(--brand-primary);
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--brand-accent);
+            border-radius: 2px;
+        }
+
+        /* Tabs SPA Logic */
+        .page-content {
+            display: none;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 8px 30px rgba(0, 83, 164, 0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            background-color: transparent;
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+            color: var(--brand-secondary);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--brand-secondary);
+            font-size: 0.85rem;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 0.6rem;
+            padding: 0.75rem 1rem;
+            border-color: #ced4da;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--brand-highlight);
+            box-shadow: 0 0 0 0.25rem rgba(0, 163, 255, 0.15);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--brand-primary);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--brand-secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 83, 164, 0.2);
+        }
+
+        .btn-outline-primary {
+            border-color: var(--brand-primary);
+            color: var(--brand-primary);
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--brand-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 83, 164, 0.2);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 0.4rem 0.9rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .status-ativo {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-inativo {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-homologacao {
+            background-color: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .status-concluido {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        /* Status Toggle */
+        .status-toggle .form-check-input {
+            width: 3rem;
+            height: 1.5rem;
+            cursor: pointer;
+        }
+
+        .status-toggle .form-check-input:checked {
+            background-color: #10b981;
+            border-color: #10b981;
+        }
+
+        .status-toggle .form-check-input:not(:checked) {
+            background-color: #ef4444;
+            border-color: #ef4444;
+        }
+
+        .status-toggle #sel-status-label {
+            margin-left: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        /* Table */
+        .table-admin th {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            font-weight: 700;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .table-admin td {
+            vertical-align: middle;
+            font-size: 0.9rem;
+        }
+
+        .action-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+            background: white;
+            color: var(--text-muted);
+            transition: all 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            background: var(--brand-primary);
+            color: white;
+            border-color: var(--brand-primary);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 83, 164, 0.2);
+        }
+
+        /* Grid Cards View */
+        .selecao-card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 8px 30px rgba(0, 83, 164, 0.05);
+            transition: all 0.3s;
+            cursor: default;
+            overflow: hidden;
+        }
+
+        .selecao-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 83, 164, 0.12);
+        }
+
+        .selecao-card .card-top-accent {
+            height: 4px;
+            background: linear-gradient(90deg, var(--brand-primary), var(--brand-highlight));
+        }
+
+        .selecao-card .card-body {
+            padding: 1.5rem;
+        }
+
+        .selecao-card .card-title {
+            font-weight: 700;
+            color: var(--brand-secondary);
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .selecao-card .meta-label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .selecao-card .meta-value {
+            font-size: 0.88rem;
+            font-weight: 500;
+        }
+
+        /* Wizard Tabs */
+        .wizard-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .wizard-tab {
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .wizard-tab:hover {
+            color: var(--brand-primary);
+        }
+
+        .wizard-tab.active {
+            color: var(--brand-primary);
+            border-bottom-color: var(--brand-primary);
+        }
+
+        .wizard-tab .tab-number {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--border-color);
+            color: var(--text-muted);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .wizard-tab.active .tab-number {
+            background: var(--brand-primary);
+            color: white;
+        }
+
+        .wizard-panel {
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .wizard-panel.active {
+            display: block;
+        }
+
+        /* Cronograma Blocks */
+        .crono-block {
+            border-left: 4px solid var(--brand-primary);
+            background: white;
+            border-radius: 0 0.75rem 0.75rem 0;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .crono-block-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--brand-secondary);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Toggle View */
+        .view-toggle .btn {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        .view-toggle .btn.active {
+            background: var(--brand-primary);
+            color: white;
+            border-color: var(--brand-primary);
+        }
+
+        /* Modal */
+        .modal-content {
+            border-radius: 1rem;
+            border: none;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.25rem 1.5rem;
+        }
+
+        .modal-title {
+            font-weight: 700;
+            color: var(--brand-secondary);
+        }
+
+        /* Cargo Tag */
+        .cargo-item {
+            background: var(--surface-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            position: relative;
+        }
+
+        .cargo-item .remove-cargo {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.75rem;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 1rem;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .cargo-item .remove-cargo:hover {
+            opacity: 1;
+        }
+
+        /* Stats Row */
+        .stat-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.25rem 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 83, 164, 0.06);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--brand-secondary);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Mobile */
+        @media (max-width: 991px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1.5rem;
+            }
+
+            .mobile-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 1rem;
+                background: var(--brand-secondary);
+                color: white;
+                position: sticky;
+                top: 0;
+                z-index: 999;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .mobile-header {
+                display: none;
+            }
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 999;
+        }
+
+        .overlay.show {
+            display: block;
+        }
+
+        /* Preview Frame */
+        .preview-frame {
+            border: 2px solid var(--border-color);
+            border-radius: 0.75rem;
+            min-height: 400px;
+            background: white;
+            padding: 2rem;
+            overflow: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <img src="https://statics.recife.pe.gov.br/images/dynamics/logo_gestao_pcr.png" alt="Logo" height="35">
+        <button class="btn text-white fs-3" id="mobile-toggle"><i class="fas fa-bars"></i></button>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="https://statics.recife.pe.gov.br/images/dynamics/logo_gestao_pcr.png" alt="SAD Portal"
+                class="sidebar-logo">
+            <span class="sidebar-label">Painel Administrativo</span>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-section-label">Principal</div>
+            <div class="nav-item">
+                <a href="#" class="nav-link active" data-page="home">
+                    <i class="fas fa-th-large"></i><span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-section-label">Configuração</div>
+            <div class="nav-item">
+                <a href="#" class="nav-link" data-page="selecao-form">
+                    <i class="fas fa-plus-circle"></i><span>Nova Seleção</span>
+                </a>
+            </div>
+
+            <div class="nav-section-label">Gestão Diária</div>
+            <div class="nav-item">
+                <a href="#" class="nav-link" data-page="cronograma">
+                    <i class="fas fa-calendar-alt"></i><span>Cronograma</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="#" class="nav-link" data-page="comunicados">
+                    <i class="fas fa-bullhorn"></i><span>Comunicados e Publicações</span>
+                </a>
+            </div>
+        </div>
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar" id="sidebar-user-avatar">AD</div>
+                <div>
+                    <div class="fw-bold small" id="sidebar-user-name">ADMINISTRADOR</div>
+                    <div class="small opacity-75" id="sidebar-user-perfil">GESTOR SAD</div>
+                </div>
+                <a href="#" class="ms-auto text-white opacity-50" title="Recarregar" onclick="handleLogout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+        <!-- ========== PAGE: DASHBOARD HOME ========== -->
+        <section id="page-home" class="page-content active">
+            <div class="section-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h2 class="section-title">Dashboard de Seleções</h2>
+                    <p class="text-muted mb-0">Gerencie todas as seleções do ecossistema.</p>
+                </div>
+                <button class="btn btn-primary" onclick="navigateTo('selecao-form'); resetSelecaoForm();">
+                    <i class="fas fa-plus me-2"></i>Nova Seleção
+                </button>
+            </div>
+
+            <!-- Stats Row -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #dbeafe; color: var(--brand-primary);">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value" id="stat-total">0</div>
+                            <div class="stat-label">Total</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #d1fae5; color: #065f46;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value" id="stat-ativos">0</div>
+                            <div class="stat-label">Ativos</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #fee2e2; color: #991b1b;">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value" id="stat-inativos">0</div>
+                            <div class="stat-label">Inativos</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #fef3c7; color: #92400e;">
+                            <i class="fas fa-pen"></i>
+                        </div>
+                        <div>
+                            <div class="stat-value" id="stat-homologacao">0</div>
+                            <div class="stat-label">Homologações</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters & View Toggle -->
+            <div class="card">
+                <div class="card-body py-3">
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0"
+                                    style="border-radius: 0.6rem 0 0 0.6rem;">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0" id="searchHome"
+                                    placeholder="Buscar por nome da seleção..."
+                                    style="border-radius: 0 0.6rem 0.6rem 0;" oninput="filterSelecoes()">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" id="filterStatus" onchange="filterSelecoes()">
+                                <option value="">Todos os Status</option>
+                                <option value="Ativo">Ativo</option>
+                                <option value="Inativo">Inativo</option>
+                                <option value="homologacao">Homologação</option>
+                                <option value="concluido">Concluído</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="filterEtapa" onchange="filterSelecoes()">
+                                <option value="">Todas as Etapas</option>
+                                <option value="aguardando publicação de edital">Aguardando publicação de edital</option>
+                                <option value="inscrições abertas">Inscrições abertas</option>
+                                <option value="inscrições encerradas">Inscrições encerradas</option>
+                                <option value="análise curricular">Análise curricular</option>
+                                <option value="resultado preliminar">Resultado preliminar</option>
+                                <option value="recurso">Recurso</option>
+                                <option value="resultado definitivo">Resultado definitivo</option>
+                                <option value="convocação">Convocação</option>
+                                <option value="encerrado">Encerrado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 text-md-end">
+                            <div class="btn-group view-toggle">
+                                <button class="btn btn-outline-secondary active" id="btn-view-table"
+                                    onclick="setView('table')">
+                                    <i class="fas fa-list"></i> Lista
+                                </button>
+                                <button class="btn btn-outline-secondary" id="btn-view-grid" onclick="setView('grid')">
+                                    <i class="fas fa-th"></i> Cards
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table View -->
+            <div id="view-table" class="card">
+                <div class="table-responsive">
+                    <table class="table table-admin mb-0">
+                        <thead>
+                            <tr>
+                                <th style="padding: 1rem 1.5rem;">ID</th>
+                                <th>Nome da Seleção</th>
+                                <th>Etapa Atual</th>
+                                <th>Status</th>
+                                <th class="text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-body text-center py-5 d-none" id="table-empty">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3 d-block"></i>
+                    <p class="text-muted fw-600">Nenhuma seleção encontrada.</p>
+                </div>
+            </div>
+
+            <!-- Grid View -->
+            <div id="view-grid" class="d-none">
+                <div class="row g-4" id="grid-body">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="text-center py-5 d-none" id="grid-empty">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3 d-block"></i>
+                    <p class="text-muted fw-600">Nenhuma seleção encontrada.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== PAGE: CRIACAO / EDICAO SELECAO ========== -->
+        <section id="page-selecao-form" class="page-content">
+            <div class="section-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h2 class="section-title" id="form-page-title">Nova Seleção</h2>
+                    <p class="text-muted mb-0">Configure os dados da seleção em etapas.</p>
+                </div>
+                <button class="btn btn-outline-secondary" onclick="voltarSelecao()">
+                    <i class="fas fa-arrow-left me-2"></i>Voltar
+                </button>
+            </div>
+
+            <!-- Wizard Tabs -->
+            <div class="wizard-tabs">
+                <div class="wizard-tab active" data-wizard="tab-dados" onclick="switchWizard('tab-dados')">
+                    <span class="tab-number">A</span> Dados Básicos & Drive
+                </div>
+                <div class="wizard-tab" data-wizard="tab-portal" onclick="switchWizard('tab-portal')">
+                    <span class="tab-number">B</span> Config. Portal
+                </div>
+                <div class="wizard-tab" data-wizard="tab-form" onclick="switchWizard('tab-form')">
+                    <span class="tab-number">C</span> Config. Formulário
+                </div>
+                <div class="wizard-tab" data-wizard="tab-preview" onclick="switchWizard('tab-preview')">
+                    <span class="tab-number">D</span> Preview
+                </div>
+            </div>
+
+            <!-- Wizard Panel A: Dados Básicos -->
+            <div class="wizard-panel active" id="tab-dados">
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-database me-2"></i>Dados Iniciais</div>
+                    <div class="card-body">
+                        <input type="hidden" id="sel-id" value="">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label class="form-label">Nome da Seleção</label>
+                                <input type="text" class="form-control" id="sel-nome"
+                                    placeholder="Ex: Processo Seletivo CNH Social 2026">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Status</label>
+                                <select class="form-select" id="sel-status">
+                                    <option value="Inativo">Inativo</option>
+                                    <option value="Ativo">Ativo</option>
+                                    <option value="homologacao">Homologação</option>
+                                    <option value="concluido">Concluído</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <button class="btn btn-success" onclick="salvarSelecao()">
+                        <i class="fas fa-save me-2"></i>Salvar
+                    </button>
+                    <button class="btn btn-primary" onclick="switchWizard('tab-portal')">
+                        Próximo <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Wizard Panel B: Config Portal -->
+            <div class="wizard-panel" id="tab-portal">
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-globe me-2"></i>Configuração do Portal</div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label">Conteúdo</label>
+                                <textarea class="form-control" id="sel-conteudo" rows="5"
+                                    placeholder="Conteúdo principal do portal..."></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Descrição</label>
+                                <textarea class="form-control" id="sel-descricao" rows="3"
+                                    placeholder="Breve descrição..."></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Número do Edital</label>
+                                <input type="text" class="form-control" id="sel-edital"
+                                    placeholder="Ex: Edital nº 001/2026">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <button class="btn btn-outline-secondary" onclick="switchWizard('tab-dados')">
+                        <i class="fas fa-arrow-left me-2"></i>Anterior
+                    </button>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-success" onclick="salvarSelecao()">
+                            <i class="fas fa-save me-2"></i>Salvar
+                        </button>
+                        <button class="btn btn-outline-primary" onclick="previewPortal()">
+                            <i class="fas fa-eye me-2"></i>Preview
+                        </button>
+                        <button class="btn btn-primary" onclick="switchWizard('tab-form')">
+                            Próximo <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wizard Panel C: Config Formulário -->
+            <div class="wizard-panel" id="tab-form">
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-list me-2"></i>Configuração do Formulário</div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="sel-multiplas">
+                                    <label class="form-check-label" for="sel-multiplas">
+                                        Permitir múltiplas inscrições
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label"><i class="fas fa-briefcase me-2"></i>Cargos</label>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <small class="text-muted">Gerencie os cargos disponíveis para esta seleção</small>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="addCargo()">
+                                        <i class="fas fa-plus me-1"></i>Adicionar
+                                    </button>
+                                </div>
+                                <div id="cargos-container">
+                                    <div class="text-center text-muted py-3" id="cargos-empty">
+                                        <i class="fas fa-briefcase fa-2x mb-2 d-block opacity-50"></i>
+                                        Nenhum cargo adicionado. Clique em "+ Adicionar".
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button class="btn btn-outline-secondary" onclick="switchWizard('tab-portal')">
+                        <i class="fas fa-arrow-left me-2"></i>Anterior
+                    </button>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-success" onclick="salvarSelecao()">
+                            <i class="fas fa-save me-2"></i>Salvar
+                        </button>
+                        <button class="btn btn-primary" onclick="goToPreview()">
+                            Próximo <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wizard Panel D: Preview -->
+            <div class="wizard-panel" id="tab-preview">
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-eye me-2"></i>Preview do Portal</div>
+                    <div class="card-body">
+                        <div id="preview-iframe-container"
+                            style="border: 1px solid #dee2e6; border-radius: 0.6rem; overflow: hidden; min-height: 400px; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                            <div class="text-center text-muted py-5">
+                                <i class="fas fa-eye fa-3x mb-3 d-block opacity-25"></i>
+                                <p class="mb-0">Clique em "Próximo" na aba C para carregar o preview.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button class="btn btn-outline-secondary" onclick="switchWizard('tab-form')">
+                        <i class="fas fa-arrow-left me-2"></i>Anterior
+                    </button>
+                    <button class="btn btn-primary btn-lg" onclick="salvarSelecao()">
+                        <i class="fas fa-save me-2"></i>Salvar Seleção
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== PAGE: CRONOGRAMA ========== -->
+        <section id="page-cronograma" class="page-content">
+            <div class="section-header">
+                <h2 class="section-title">Gerenciar Cronograma</h2>
+                <p class="text-muted mb-0">Defina as datas de cada fase do processo seletivo.</p>
+            </div>
+
+            <!-- Seletor -->
+            <div class="card">
+                <div class="card-body py-3">
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-6">
+                            <label class="form-label mb-1">Seleção</label>
+                            <select class="form-select" id="crono-selecao" onchange="loadCronograma()">
+                                <option value="">-- Escolha uma seleção --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 text-md-end align-self-end">
+                            <span class="text-muted small" id="crono-status-hint"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cronograma Form -->
+            <div id="crono-form-area" class="d-none">
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-calendar-alt me-2"></i>cronogramas</div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Início das Inscrições</label>
+                                <input type="date" class="form-control" id="crono-inicio_inscricoes">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Término das Inscrições</label>
+                                <input type="date" class="form-control" id="crono-termino_inscricoes">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Início da Impugnação</label>
+                                <input type="date" class="form-control" id="crono-inicio_impugnacao">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Término da Impugnação</label>
+                                <input type="date" class="form-control" id="crono-termino_impugnacao">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Publicação da Concorrência</label>
+                                <input type="date" class="form-control" id="crono-publicacao_concorrencia">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Resultado Preliminar PCD</label>
+                                <input type="date" class="form-control" id="crono-resultado_preliminar_pcd">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Início Recurso PCD</label>
+                                <input type="date" class="form-control" id="crono-inicio_recurso_pcd">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Término Recurso PCD</label>
+                                <input type="date" class="form-control" id="crono-termino_recurso_pcd">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Resultado Definitivo PCD</label>
+                                <input type="date" class="form-control" id="crono-resultado_definitivo_pcd">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Resultado Preliminar Análise Curricular</label>
+                                <input type="date" class="form-control"
+                                    id="crono-resultado_preliminar_analise_curricular">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Resultado Preliminar PPNI</label>
+                                <input type="date" class="form-control" id="crono-resultado_preliminar_ppni">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Início Recurso Avaliação Curricular</label>
+                                <input type="date" class="form-control" id="crono-inicio_recurso_avaliacao_curricular">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Término Recurso Avaliação Curricular</label>
+                                <input type="date" class="form-control" id="crono-termino_recurso_avaliacao_curricular">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Convocação PCD</label>
+                                <input type="date" class="form-control" id="crono-convocacao_pcd">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Início Avaliação PCD</label>
+                                <input type="date" class="form-control" id="crono-inicio_avaliacao_pcd">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Término Avaliação PCD</label>
+                                <input type="date" class="form-control" id="crono-termino_avaliacao_pcd">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Publicação Resultado PCD</label>
+                                <input type="date" class="form-control" id="crono-publicacao_resultado_pcd">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Início Recurso Resultado Preliminar Avaliação PCD</label>
+                                <input type="date" class="form-control"
+                                    id="crono-inicio_recurso_resultado_preliminar_avaliacao_pcd">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Término Recurso Resultado Preliminar Avaliação PCD</label>
+                                <input type="date" class="form-control"
+                                    id="crono-termino_recurso_resultado_preliminar_avaliacao_pcd">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Resultado Final</label>
+                                <input type="date" class="form-control" id="crono-resultado_final">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Início Recurso PPNI</label>
+                                <input type="date" class="form-control" id="crono-inicio_recurso_ppni">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Término Recurso PPNI</label>
+                                <input type="date" class="form-control" id="crono-termino_recurso_ppni">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex justify-content-end">
+                    <button class="btn btn-primary" onclick="salvarCronograma()">
+                        <i class="fas fa-save me-2"></i>Salvar Cronograma
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== PAGE: COMUNICADOS ========== -->
+        <section id="page-comunicados" class="page-content">
+            <div class="section-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h2 class="section-title">Comunicados e Editais</h2>
+                    <p class="text-muted mb-0">Publique e gerencie comunicados vinculados a cada seleção.</p>
+                </div>
+                <button class="btn btn-primary" id="btn-novo-comunicado" onclick="openComunicadoModal()" disabled>
+                    <i class="fas fa-plus me-2"></i>Novo Comunicado
+                </button>
+            </div>
+
+            <!-- Seletor -->
+            <div class="card">
+                <div class="card-body py-3">
+                    <div class="row align-items-center g-3">
+                        <div class="col-md-6">
+                            <label class="form-label mb-1">Seleção</label>
+                            <select class="form-select" id="com-selecao" onchange="loadComunicados()">
+                                <option value="">-- Escolha uma seleção --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista -->
+            <div class="card" id="com-list-card" style="display:none;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-list me-2"></i>Comunicados Publicados</span>
+                    <span class="badge bg-primary rounded-pill" id="com-count">0</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-admin mb-0">
+                        <thead>
+                            <tr>
+                                <th style="padding: 1rem 1.5rem;">Descrição</th>
+                                <th>Tipo</th>
+                                <th>URL</th>
+                                <th class="text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="com-table-body"></tbody>
+                    </table>
+                </div>
+                <div class="card-body text-center py-4 d-none" id="com-empty">
+                    <p class="text-muted mb-0">Nenhum comunicado para esta seleção.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ========== MODAL: PREVIEW PORTAL ========== -->
+    <div class="modal fade" id="previewModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-eye me-2"></i>Preview do Portal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="preview-frame" id="preview-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== MODAL: COMUNICADO ========== -->
+    <div class="modal fade" id="comunicadoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="comunicado-modal-title"><i class="fas fa-bullhorn me-2"></i>Novo
+                        Comunicado</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="com-edit-id" value="">
+                    <div class="mb-3">
+                        <label class="form-label">Descrição</label>
+                        <input type="text" class="form-control" id="com-descricao"
+                            placeholder="Título ou descrição do comunicado">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">URL do Arquivo</label>
+                        <input type="url" class="form-control" id="com-url" placeholder="https://drive.google.com/...">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tipo (mimetype)</label>
+                        <select class="form-select" id="com-mimetype">
+                            <option value="application/pdf">PDF</option>
+                            <option value="application/vnd.openxmlformats-officedocument.wordprocessingml.document">DOCX
+                            </option>
+                            <option value="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">XLSX
+                            </option>
+                            <option value="image/png">PNG</option>
+                            <option value="image/jpeg">JPEG</option>
+                            <option value="text/html">HTML</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-primary" onclick="salvarComunicado()">
+                        <i class="fas fa-save me-2"></i>Salvar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== MODAL: HOMOLOGAÇÃO AO VOLTAR ========== -->
+    <div class="modal fade" id="modalRascunho" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-save me-2 text-primary"></i>Salvar em Homologação?
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-2">
+                    <p class="text-muted mb-0">Você possui alterações não salvas. Deseja salvar em
+                        <strong>Homologação</strong> antes de sair?
+                    </p>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-danger" id="btnDescartarRascunho">Descartar e
+                        sair</button>
+                    <button type="button" class="btn btn-primary" id="btnSalvarRascunho"><i
+                            class="fas fa-save me-2"></i>Salvar em Homologação</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== MODAL: AVISO CRONOGRAMA VAZIO ========== -->
+    <div class="modal fade" id="modalAvisoCronograma" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-warning"><i
+                            class="fas fa-exclamation-triangle me-2"></i>Atenção: Ações Pendentes</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-2">
+                    <p class="mb-0">A seleção foi cadastrada com sucesso, mas está <strong>sem cronograma e sem
+                            formulário preenchidos</strong>. Lembre-se de configurar o cronograma e ajustar o formulário
+                        padrão gerado para esta seleção.</p>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== TOAST ========== -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 2000;">
+        <div id="toast" class="toast align-items-center text-bg-success border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body" id="toast-msg">Operação realizada com sucesso!</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ╔══════════════════════════════════════════════════════════════╗
+        // ║  CONFIGURAÇÃO DOS WEBHOOKS n8n                              ║
+        // ╚══════════════════════════════════════════════════════════════╝
+
+        const CONFIG = {
+            MOCK: false,
+            TIMEOUT: 15000,
+            WEBHOOKS: {
+                comunicados: 'https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/comunicados-sadselecao1',
+                cronogramas: 'https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/cronogramas-sadselecao1',
+                forms: 'https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/estrutura_html_forms-sadselecao1',
+                portais: 'https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/estrutura_html_portais-sadselecao1',
+                selecoes: 'https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/selecoes_cadastradas-sadselecao1'
+            }
+        };
+        const DEFAULT_HASH_DRIVE = '1wyBE9x0KiexFZVVeG2mly55_s7C_fBMO';
+
+        // Dados do Usuário Logado (Injetados pelo n8n via substituição {{ variavel }})
+        const LOGGED_USER = {
+            nome: "{{ nome }}",
+            login: "{{ login }}",
+            perfil: "{{ perfil }}",
+            nomeCurto: "{{ nomeCurto }}",
+            nomeIniciais: "{{ nomeIniciais }}",
+            perfilUC: "{{ perfilUC }}"
+        };
+
+        // ╔══════════════════════════════════════════════════════════════╗
+        // ║  CAMADA DE API n8n                                          ║
+        // ║  Fluxo: HTML -> Webhooks n8n                                ║
+        // ╚══════════════════════════════════════════════════════════════╝
+
+        const auth = {
+            getToken() {
+                return '';
+            },
+            logout() {
+                window.location.reload();
+            },
+            getUser() {
+                return LOGGED_USER;
+            },
+            isAuthenticated() {
+                return true;
+            },
+            async login() {
+                return this.getUser();
+            }
+        };
+
+        // ╔══════════════════════════════════════════════════════════════╗
+        // ║  HELPERS SQL — montagem segura de queries para n8n         ║
+        // ╚══════════════════════════════════════════════════════════════╝
+
+        const sql = {
+            /** Escapa um valor para uso em literal string SQL do PostgreSQL */
+            escape(val) {
+                if (val === null || val === undefined || val === '') return 'NULL';
+                if (typeof val === 'boolean') return val ? 'TRUE' : 'FALSE';
+                if (typeof val === 'number') return isNaN(val) ? 'NULL' : String(val);
+                return "'" + String(val).replace(/'/g, "''") + "'";
+            },
+            /** Sempre retorna string SQL não-nula ('' quando vazio) — para colunas NOT NULL text */
+            str(val) {
+                return "'" + String(val ?? '').replace(/'/g, "''") + "'";
+            },
+            /** Serializa objeto/array como literal jsonb para PostgreSQL */
+            jsonb(val) {
+                if (val === null || val === undefined) return 'NULL';
+                return "'" + JSON.stringify(val).replace(/'/g, "''") + "'::jsonb";
+            },
+            /** Formata data ISO ou NULL */
+            date(val) {
+                if (!val || isNaN(Date.parse(val))) return 'NULL';
+                return this.escape(val);
+            }
+        };
+
+        const api = {
+            async request(url, options = {}) {
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), CONFIG.TIMEOUT);
+
+                try {
+                    const headers = {
+                        'Content-Type': 'application/json'
+                    };
+
+                    let requestUrl = url;
+                    if (options.query && typeof options.query === 'object') {
+                        const search = new URLSearchParams();
+                        Object.entries(options.query).forEach(([key, value]) => {
+                            if (value !== undefined && value !== null && value !== '') {
+                                search.append(key, value);
+                            }
+                        });
+                        const queryString = search.toString();
+                        if (queryString) {
+                            requestUrl += (requestUrl.includes('?') ? '&' : '?') + queryString;
+                        }
+                    }
+
+                    const res = await fetch(requestUrl, {
+                        method: options.method || 'GET',
+                        headers,
+                        body: options.body ? JSON.stringify(options.body) : undefined,
+                        signal: controller.signal
+                    });
+
+                    clearTimeout(timer);
+
+                    if (!res.ok) {
+                        const errorText = await res.text().catch(() => '');
+                        try {
+                            const errorJson = JSON.parse(errorText);
+                            throw new Error(errorJson.error || `HTTP ${res.status}`);
+                        } catch {
+                            throw new Error(`HTTP ${res.status}: ${errorText || res.statusText}`);
+                        }
+                    }
+
+                    const text = await res.text();
+                    try { return JSON.parse(text); }
+                    catch { return text; }
+
+                } catch (err) {
+                    clearTimeout(timer);
+                    if (err.name === 'AbortError') {
+                        throw new Error('Timeout: o webhook do n8n não respondeu a tempo.');
+                    }
+                    throw err;
+                }
+            },
+
+            unwrapCollection(data) {
+                if (Array.isArray(data)) return data;
+                if (Array.isArray(data?.data)) return data.data;
+                if (Array.isArray(data?.items)) return data.items;
+                if (Array.isArray(data?.results)) return data.results;
+                return [];
+            },
+
+            asRecord(data) {
+                if (data && typeof data === 'object' && !Array.isArray(data)) {
+                    if (data.data && typeof data.data === 'object' && !Array.isArray(data.data)) {
+                        return data.data;
+                    }
+                    return data;
+                }
+                return {};
+            },
+
+            indexBySelecaoId(items) {
+                return this.unwrapCollection(items).reduce((acc, item) => {
+                    const key = item?.id_selecao ?? item?.selecao_id ?? item?.id;
+                    if (key !== undefined && key !== null && key !== '') {
+                        acc[String(key)] = item;
+                    }
+                    return acc;
+                }, {});
+            },
+
+            normalizeSelecao(base, portal, form) {
+                const etapaAtual = base.etapa_atual || base.etapa || base.fase_atual || 'aguardando publicação de edital';
+                const rawFormCargos = (() => {
+                    if (Array.isArray(form?.cargos)) return form.cargos;
+                    if (typeof form?.cargos === 'string') {
+                        try {
+                            const parsed = JSON.parse(form.cargos);
+                            return Array.isArray(parsed) ? parsed : [];
+                        } catch {
+                            return [];
+                        }
+                    }
+                    return [];
+                })();
+
+                const rawBaseCargos = Array.isArray(base.cargos) ? base.cargos : [];
+
+                const toCargoString = cargo => {
+                    if (typeof cargo === 'string') return cargo;
+                    if (cargo && typeof cargo === 'object') {
+                        const nivel = cargo.nivel || '';
+                        const nomeCargo = cargo.cargo || cargo.nome || '';
+                        const especialidade = cargo.especialidade || cargo.descricao || '';
+                        return `${nivel}|${nomeCargo}|${especialidade}`;
+                    }
+                    return '';
+                };
+
+                const cargos = (rawFormCargos.length ? rawFormCargos : rawBaseCargos)
+                    .map(toCargoString)
+                    .filter(Boolean);
+
+                return {
+                    id: base.id ?? base.id_selecao ?? portal?.id_selecao ?? form?.id_selecao ?? null,
+                    nome: base.nome || portal?.nome || '',
+                    status: (() => {
+                        let st = base.status || '';
+                        let norm = st.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                        if (norm === 'ativo') return 'Ativo';
+                        if (norm === 'inativo') return 'Inativo';
+                        if (norm === 'rascunho' || norm === 'homologacao') return 'homologacao';
+                        if (norm === 'concluido') return 'concluido';
+                        return 'homologacao';
+                    })(),
+                    etapa_atual: etapaAtual,
+                    hash_drive: base.hash_drive || portal?.hash_drive || '',
+                    conteudo: portal?.conteudo || portal?.conteudo_html || base.conteudo || '',
+                    descricao: portal?.descricao || base.descricao || '',
+                    edital: portal?.edital || portal?.url_edital || base.edital || '',
+                    url_recurso: portal?.url_recurso || base.url_recurso || '',
+                    url_formulario: portal?.url_formulario || form?.url_formulario || base.url_formulario || '',
+                    mascara_inscricao: portal?.mascara_inscricao || form?.mascara_inscricao || base.mascara_inscricao || '',
+                    processid: form?.processid || base.processid || '',
+                    cd_consultar_inscricao: form?.cd_consultar_inscricao || base.cd_consultar_inscricao || '',
+                    hash_form: form?.hash_form || base.hash_form || '',
+                    multiplas_inscricoes: !!(form?.multiplas_inscricoes ?? base.multiplas_inscricoes),
+                    cargos
+                };
+            },
+
+            async getSelecoes() {
+                const [selecoesData, portaisData, formsData] = await Promise.all([
+                    this.request(CONFIG.WEBHOOKS.selecoes),
+                    this.request(CONFIG.WEBHOOKS.portais),
+                    this.request(CONFIG.WEBHOOKS.forms)
+                ]);
+
+                const portaisMap = this.indexBySelecaoId(portaisData);
+                const formsMap = this.indexBySelecaoId(formsData);
+
+                return this.unwrapCollection(selecoesData).map(item => {
+                    const key = String(item.id ?? item.id_selecao ?? '');
+                    return this.normalizeSelecao(item, portaisMap[key], formsMap[key]);
+                });
+            },
+
+            async upsertSelecao(payload) {
+                const data = sanitize.selecao(payload);
+
+                let selecaoId;
+
+                if (data.id) {
+                    // ── EDIÇÃO: UPDATE nas 3 tabelas (com fallback INSERT se ainda não existir) ──
+                    selecaoId = data.id;
+
+                    const selecaoSql =
+                        `UPDATE "sad-selecoes".selecoes_cadastradas` +
+                        ` SET nome = ${sql.escape(data.nome)}, status = ${sql.escape(data.status)}` +
+                        ` WHERE id = ${selecaoId}` +
+                        ` RETURNING id`;
+
+                    const checkSql = tabela =>
+                        `SELECT COUNT(*) AS cnt FROM "sad-selecoes".${tabela} WHERE id_selecao = ${selecaoId}`;
+
+                    const [portaisCheck, formsCheck] = await Promise.all([
+                        this.request(CONFIG.WEBHOOKS.portais, { method: 'POST', body: { query: checkSql('estrutura_html_portais') } }),
+                        this.request(CONFIG.WEBHOOKS.forms, { method: 'POST', body: { query: checkSql('estrutura_html_forms') } })
+                    ]);
+
+                    const countOf = res => {
+                        const row = this.unwrapCollection(res)[0] || this.asRecord(res);
+                        return parseInt(row?.cnt ?? row?.count ?? 0, 10);
+                    };
+
+                    const portaisSql = countOf(portaisCheck) > 0
+                        ? `UPDATE "sad-selecoes".estrutura_html_portais` +
+                        ` SET selecao = ${sql.escape(data.nome)}, conteudo = ${sql.escape(data.conteudo)}, descricao = ${sql.escape(data.descricao)}, edital = ${sql.escape(data.edital)}` +
+                        ` WHERE id_selecao = ${selecaoId}`
+                        : `INSERT INTO "sad-selecoes".estrutura_html_portais (id_selecao, selecao, conteudo, descricao, edital)` +
+                        ` VALUES (${selecaoId}, ${sql.escape(data.nome)}, ${sql.escape(data.conteudo)}, ${sql.escape(data.descricao)}, ${sql.escape(data.edital)})`;
+
+                    const formsSql = countOf(formsCheck) > 0
+                        ? `UPDATE "sad-selecoes".estrutura_html_forms` +
+                        ` SET multiplas_inscricoes = ${data.multiplas_inscricoes ? 'TRUE' : 'FALSE'},` +
+                        `  cargos = ${sql.jsonb(data.cargos)}` +
+                        ` WHERE id_selecao = ${selecaoId}`
+                        : `INSERT INTO "sad-selecoes".estrutura_html_forms` +
+                        ` (id_selecao, form, processid, cd_consultar_inscricao, hash_form, multiplas_inscricoes, cargos)` +
+                        ` VALUES (${selecaoId}, ${sql.str(data.processid)}, ${sql.str(data.processid)},` +
+                        `  ${sql.str(data.cd_consultar_inscricao)}, ${sql.str(data.hash_form)},` +
+                        `  ${data.multiplas_inscricoes ? 'TRUE' : 'FALSE'}, ${sql.jsonb(data.cargos)})`;
+
+                    await Promise.all([
+                        this.request(CONFIG.WEBHOOKS.selecoes, { method: 'POST', body: { query: selecaoSql } }),
+                        this.request(CONFIG.WEBHOOKS.portais, { method: 'POST', body: { query: portaisSql } }),
+                        this.request(CONFIG.WEBHOOKS.forms, { method: 'POST', body: { query: formsSql } })
+                    ]);
+
+                } else {
+                    // ── CRIAÇÃO: INSERT nas 3 tabelas ─────────────────────────
+                    const selecaoSql =
+                        `INSERT INTO "sad-selecoes".selecoes_cadastradas (nome, status, hash_drive)` +
+                        ` VALUES (${sql.escape(data.nome)}, ${sql.escape(data.status)}, ${sql.escape(data.hash_drive)})` +
+                        ` RETURNING id`;
+
+                    const selecaoResponse = await this.request(CONFIG.WEBHOOKS.selecoes, {
+                        method: 'POST',
+                        body: { query: selecaoSql }
+                    });
+
+                    const firstRow = this.unwrapCollection(selecaoResponse)[0] || this.asRecord(selecaoResponse);
+                    selecaoId = firstRow.id ?? firstRow.id_selecao;
+                    if (!selecaoId) {
+                        throw new Error('O webhook de selecoes nao retornou um id da selecao.');
+                    }
+
+                    // Verifica se já existem linhas para este id_selecao (sem UNIQUE constraint)
+                    const checkSql = id =>
+                        `SELECT COUNT(*) AS cnt FROM "sad-selecoes".${id} WHERE id_selecao = ${selecaoId}`;
+
+                    const [portaisCheck, formsCheck] = await Promise.all([
+                        this.request(CONFIG.WEBHOOKS.portais, { method: 'POST', body: { query: checkSql('estrutura_html_portais') } }),
+                        this.request(CONFIG.WEBHOOKS.forms, { method: 'POST', body: { query: checkSql('estrutura_html_forms') } })
+                    ]);
+
+                    const countOf = res => {
+                        const row = this.unwrapCollection(res)[0] || this.asRecord(res);
+                        return parseInt(row?.cnt ?? row?.count ?? 0, 10);
+                    };
+
+                    const portaisExists = countOf(portaisCheck) > 0;
+                    const formsExists = countOf(formsCheck) > 0;
+
+                    const portaisSql = portaisExists
+                        ? `UPDATE "sad-selecoes".estrutura_html_portais` +
+                        ` SET selecao = ${sql.escape(data.nome)}, conteudo = ${sql.escape(data.conteudo)}, descricao = ${sql.escape(data.descricao)}, edital = ${sql.escape(data.edital)}` +
+                        ` WHERE id_selecao = ${selecaoId}`
+                        : `INSERT INTO "sad-selecoes".estrutura_html_portais (id_selecao, selecao, conteudo, descricao, edital)` +
+                        ` VALUES (${selecaoId}, ${sql.escape(data.nome)}, ${sql.escape(data.conteudo)}, ${sql.escape(data.descricao)}, ${sql.escape(data.edital)})`;
+
+                    const formsSql = formsExists
+                        ? `UPDATE "sad-selecoes".estrutura_html_forms` +
+                        ` SET multiplas_inscricoes = ${data.multiplas_inscricoes ? 'TRUE' : 'FALSE'},` +
+                        `  cargos = ${sql.jsonb(data.cargos)}` +
+                        ` WHERE id_selecao = ${selecaoId}`
+                        : `INSERT INTO "sad-selecoes".estrutura_html_forms` +
+                        ` (id_selecao, form, processid, cd_consultar_inscricao, hash_form, multiplas_inscricoes, cargos)` +
+                        ` VALUES (${selecaoId}, ${sql.str(data.processid)}, ${sql.str(data.processid)},` +
+                        `  ${sql.str(data.cd_consultar_inscricao)}, ${sql.str(data.hash_form)},` +
+                        `  ${data.multiplas_inscricoes ? 'TRUE' : 'FALSE'}, ${sql.jsonb(data.cargos)})`;
+
+                    const cronogramaSql =
+                        `INSERT INTO "sad-selecoes".cronograma (id_selecao, updated_at)` +
+                        ` VALUES (${selecaoId}, NOW())`;
+
+                    await Promise.all([
+                        this.request(CONFIG.WEBHOOKS.portais, { method: 'POST', body: { query: portaisSql } }),
+                        this.request(CONFIG.WEBHOOKS.forms, { method: 'POST', body: { query: formsSql } }),
+                        this.request(CONFIG.WEBHOOKS.cronogramas, { method: 'POST', body: { query: cronogramaSql } })
+                    ]);
+                }
+
+                return { id: selecaoId };
+            },
+
+            async getCronograma(idSelecao) {
+                const data = await this.request(CONFIG.WEBHOOKS.cronogramas, {
+                    query: { id_selecao: idSelecao }
+                });
+                const rows = this.unwrapCollection(data)
+                    .map(row => (row && typeof row === 'object' && row.json && typeof row.json === 'object') ? row.json : row)
+                    .filter(row => row && typeof row === 'object');
+
+                if (rows.length) {
+                    const wantedId = String(idSelecao);
+                    const match = rows.find(row =>
+                        String(row.id_selecao ?? row.selecao_id ?? row.idSelecao ?? '') === wantedId
+                    );
+                    return match || rows[0];
+                }
+
+                const record = this.asRecord(data);
+                if (record && typeof record === 'object' && record.json && typeof record.json === 'object') {
+                    return record.json;
+                }
+                return record;
+            },
+
+            saveCronograma(payload, isUpdate = false) {
+                const d = sanitize.cronograma(payload);
+                let cronSql;
+                if (isUpdate) {
+                    cronSql =
+                        `UPDATE "sad-selecoes".cronograma SET` +
+                        `  inicio_inscricoes = ${sql.date(d.inicio_inscricoes)}, termino_inscricoes = ${sql.date(d.termino_inscricoes)},` +
+                        `  inicio_impugnacao = ${sql.date(d.inicio_impugnacao)}, termino_impugnacao = ${sql.date(d.termino_impugnacao)},` +
+                        `  publicacao_concorrencia = ${sql.date(d.publicacao_concorrencia)},` +
+                        `  resultado_preliminar_pcd = ${sql.date(d.resultado_preliminar_pcd)},` +
+                        `  inicio_recurso_pcd = ${sql.date(d.inicio_recurso_pcd)}, termino_recurso_pcd = ${sql.date(d.termino_recurso_pcd)},` +
+                        `  resultado_definitivo_pcd = ${sql.date(d.resultado_definitivo_pcd)},` +
+                        `  resultado_preliminar_analise_curricular = ${sql.date(d.resultado_preliminar_analise_curricular)},` +
+                        `  resultado_preliminar_ppni = ${sql.date(d.resultado_preliminar_ppni)},` +
+                        `  inicio_recurso_avaliacao_curricular = ${sql.date(d.inicio_recurso_avaliacao_curricular)},` +
+                        `  termino_recurso_avaliacao_curricular = ${sql.date(d.termino_recurso_avaliacao_curricular)},` +
+                        `  convocacao_pcd = ${sql.date(d.convocacao_pcd)},` +
+                        `  inicio_avaliacao_pcd = ${sql.date(d.inicio_avaliacao_pcd)}, termino_avaliacao_pcd = ${sql.date(d.termino_avaliacao_pcd)},` +
+                        `  publicacao_resultado_pcd = ${sql.date(d.publicacao_resultado_pcd)},` +
+                        `  inicio_recurso_resultado_preliminar_avaliacao_pcd = ${sql.date(d.inicio_recurso_resultado_preliminar_avaliacao_pcd)},` +
+                        `  termino_recurso_resultado_preliminar_avaliacao_pcd = ${sql.date(d.termino_recurso_resultado_preliminar_avaliacao_pcd)},` +
+                        `  resultado_final = ${sql.date(d.resultado_final)},` +
+                        `  inicio_recurso_ppni = ${sql.date(d.inicio_recurso_ppni)}, termino_recurso_ppni = ${sql.date(d.termino_recurso_ppni)},` +
+                        `  updated_at = NOW()` +
+                        ` WHERE id_selecao = ${d.id_selecao}`;
+                } else {
+                    cronSql =
+                        `INSERT INTO "sad-selecoes".cronograma` +
+                        ` (id_selecao, inicio_inscricoes, termino_inscricoes, inicio_impugnacao, termino_impugnacao,` +
+                        `  publicacao_concorrencia, resultado_preliminar_pcd, inicio_recurso_pcd, termino_recurso_pcd,` +
+                        `  resultado_definitivo_pcd, resultado_preliminar_analise_curricular, resultado_preliminar_ppni,` +
+                        `  inicio_recurso_avaliacao_curricular, termino_recurso_avaliacao_curricular, convocacao_pcd,` +
+                        `  inicio_avaliacao_pcd, termino_avaliacao_pcd, publicacao_resultado_pcd,` +
+                        `  inicio_recurso_resultado_preliminar_avaliacao_pcd, termino_recurso_resultado_preliminar_avaliacao_pcd,` +
+                        `  resultado_final, inicio_recurso_ppni, termino_recurso_ppni, updated_at)` +
+                        ` VALUES (${d.id_selecao}, ${sql.date(d.inicio_inscricoes)}, ${sql.date(d.termino_inscricoes)},` +
+                        `  ${sql.date(d.inicio_impugnacao)}, ${sql.date(d.termino_impugnacao)}, ${sql.date(d.publicacao_concorrencia)},` +
+                        `  ${sql.date(d.resultado_preliminar_pcd)}, ${sql.date(d.inicio_recurso_pcd)}, ${sql.date(d.termino_recurso_pcd)},` +
+                        `  ${sql.date(d.resultado_definitivo_pcd)}, ${sql.date(d.resultado_preliminar_analise_curricular)},` +
+                        `  ${sql.date(d.resultado_preliminar_ppni)}, ${sql.date(d.inicio_recurso_avaliacao_curricular)},` +
+                        `  ${sql.date(d.termino_recurso_avaliacao_curricular)}, ${sql.date(d.convocacao_pcd)},` +
+                        `  ${sql.date(d.inicio_avaliacao_pcd)}, ${sql.date(d.termino_avaliacao_pcd)}, ${sql.date(d.publicacao_resultado_pcd)},` +
+                        `  ${sql.date(d.inicio_recurso_resultado_preliminar_avaliacao_pcd)},` +
+                        `  ${sql.date(d.termino_recurso_resultado_preliminar_avaliacao_pcd)}, ${sql.date(d.resultado_final)},` +
+                        `  ${sql.date(d.inicio_recurso_ppni)}, ${sql.date(d.termino_recurso_ppni)}, NOW())`;
+                }
+                return this.request(CONFIG.WEBHOOKS.cronogramas, {
+                    method: 'POST',
+                    body: { query: cronSql }
+                });
+            },
+
+            async getComunicados(idSelecao) {
+                const data = await this.request(CONFIG.WEBHOOKS.comunicados, {
+                    query: { id_selecao: idSelecao }
+                });
+
+                const wantedId = String(idSelecao);
+                return this.unwrapCollection(data)
+                    .map(row => (row && typeof row === 'object' && row.json && typeof row.json === 'object') ? row.json : row)
+                    .filter(row => row && typeof row === 'object')
+                    .filter(row => String(row.id_selecao ?? row.selecao_id ?? '') === wantedId);
+            },
+
+            saveComunicado(payload) {
+                const d = sanitize.comunicado(payload);
+                let comSql;
+                if (d.is_new) {
+                    const now = new Date().toISOString().replace('T', ' ').replace('Z', '').slice(0, 23);
+                    comSql =
+                        `INSERT INTO "sad-selecoes".comunicados (id, id_selecao, descricao, url, mimetype, data)` +
+                        ` VALUES (${sql.escape(d.id)}, ${d.id_selecao}, ${sql.escape(d.descricao)}, ${sql.escape(d.url)}, ${sql.escape(d.mimetype)}, ${sql.escape(now)})` +
+                        ` RETURNING id`;
+                } else {
+                    comSql =
+                        `UPDATE "sad-selecoes".comunicados` +
+                        ` SET descricao = ${sql.escape(d.descricao)}, url = ${sql.escape(d.url)}, mimetype = ${sql.escape(d.mimetype)}` +
+                        ` WHERE id = ${sql.escape(d.id)}` +
+                        ` RETURNING id`;
+                }
+                return this.request(CONFIG.WEBHOOKS.comunicados, {
+                    method: 'POST',
+                    body: { query: comSql }
+                });
+            },
+
+            deleteComunicado(id) {
+                const delSql = `DELETE FROM "sad-selecoes".comunicados WHERE id = ${sql.escape(String(id))}`;
+                return this.request(CONFIG.WEBHOOKS.comunicados, {
+                    method: 'POST',
+                    body: { query: delSql }
+                });
+            }
+        };
+
+        // ╔══════════════════════════════════════════════════════════════╗
+        // ║  SANITIZAÇÃO — Limpa dados antes de enviar ao n8n          ║
+        // ╚══════════════════════════════════════════════════════════════╝
+
+        const sanitize = {
+            /** Remove tags HTML perigosas de uma string */
+            text(str) {
+                if (typeof str !== 'string') return str;
+                return str.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+                    .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
+                    .trim();
+            },
+
+            /** Valida que é uma URL válida ou string vazia */
+            url(str) {
+                if (!str || typeof str !== 'string') return '';
+                const trimmed = str.trim();
+                if (!trimmed) return '';
+                try {
+                    const parsed = new URL(trimmed);
+                    if (['http:', 'https:'].includes(parsed.protocol)) return trimmed;
+                    return '';
+                } catch {
+                    return '';
+                }
+            },
+
+            /** Sanitiza payload de seleção */
+            selecao(data) {
+                return {
+                    id: data.id ? parseInt(data.id) || null : null,
+                    nome: this.text(data.nome),
+                    status: ['Ativo', 'Inativo', 'homologacao', 'concluido'].includes(data.status) ? data.status : 'homologacao',
+                    etapa_atual: this.text(data.etapa_atual) || 'aguardando publicação de edital',
+                    hash_drive: this.text(data.hash_drive),
+                    conteudo: data.conteudo || '',  // HTML permitido aqui (editor)
+                    descricao: this.text(data.descricao),
+                    edital: this.text(data.edital),
+                    url_recurso: this.url(data.url_recurso),
+                    url_formulario: this.url(data.url_formulario),
+                    mascara_inscricao: this.text(data.mascara_inscricao),
+                    processid: this.text(data.processid),
+                    cd_consultar_inscricao: this.text(data.cd_consultar_inscricao),
+                    hash_form: (!data.id && !data.hash_form) ? '1KoQvLWm_mRo5GLGVyD4kPy9Xl7lZE6qr' : this.text(data.hash_form),
+                    multiplas_inscricoes: !!data.multiplas_inscricoes,
+                    cargos: Array.isArray(data.cargos)
+                        ? data.cargos
+                            .map(c => {
+                                if (typeof c === 'string') {
+                                    const [nivel = '', cargo = '', especialidade = ''] = c.split('|');
+                                    return `${this.text(nivel)}|${this.text(cargo)}|${this.text(especialidade)}`;
+                                }
+                                if (c && typeof c === 'object') {
+                                    const nivel = this.text(c.nivel || '');
+                                    const cargo = this.text(c.cargo || c.nome || '');
+                                    const especialidade = this.text(c.especialidade || c.descricao || '');
+                                    return `${nivel}|${cargo}|${especialidade}`;
+                                }
+                                return '';
+                            })
+                            .filter(Boolean)
+                        : []
+                };
+            },
+
+            /** Sanitiza payload de cronograma */
+            cronograma(data) {
+                const clean = { id_selecao: parseInt(data.id_selecao) };
+                const dateFields = [
+                    'inicio_inscricoes',
+                    'termino_inscricoes',
+                    'inicio_impugnacao',
+                    'termino_impugnacao',
+                    'publicacao_concorrencia',
+                    'resultado_preliminar_pcd',
+                    'inicio_recurso_pcd',
+                    'termino_recurso_pcd',
+                    'resultado_definitivo_pcd',
+                    'resultado_preliminar_analise_curricular',
+                    'resultado_preliminar_ppni',
+                    'inicio_recurso_avaliacao_curricular',
+                    'termino_recurso_avaliacao_curricular',
+                    'convocacao_pcd',
+                    'inicio_avaliacao_pcd',
+                    'termino_avaliacao_pcd',
+                    'publicacao_resultado_pcd',
+                    'inicio_recurso_resultado_preliminar_avaliacao_pcd',
+                    'termino_recurso_resultado_preliminar_avaliacao_pcd',
+                    'resultado_final',
+                    'inicio_recurso_ppni',
+                    'termino_recurso_ppni'
+                ];
+                dateFields.forEach(f => {
+                    clean[f] = data[f] && !isNaN(Date.parse(data[f])) ? data[f] : null;
+                });
+                return clean;
+            },
+
+            /** Sanitiza payload de comunicado */
+            comunicado(data) {
+                return {
+                    id: data.id ? this.text(String(data.id)) : null,
+                    is_new: !!data.is_new,
+                    id_selecao: parseInt(data.id_selecao),
+                    descricao: this.text(data.descricao),
+                    url: this.url(data.url),
+                    mimetype: this.text(data.mimetype)
+                };
+            }
+        };
+
+        // ===========================
+        // STATE
+        // ===========================
+        let selecoes = [];
+        let comunicados = [];
+        let currentView = 'table';
+        let cargoCounter = 0;
+        let cronogramaExiste = false;
+
+        // ===========================
+        // MOCK DATA (ativo quando CONFIG.MOCK = true)
+        // ===========================
+        const mockSelecoes = [
+            {
+                id: 1,
+                nome: 'CNH Social Recife 2026',
+                status: 'Ativo',
+                etapa_atual: 'Inscrições Abertas',
+                hash_drive: 'abc123drive',
+                conteudo: '<h3>Bem-vindo ao Processo Seletivo</h3><p>CNH Social Recife 2026 - Inscrições abertas!</p>',
+                descricao: 'Processo seletivo para habilitação social gratuita.',
+                edital: 'https://drive.google.com/edital-cnh-2026',
+                url_recurso: 'https://recurso.example.com',
+                url_formulario: 'https://form.example.com',
+                mascara_inscricao: 'CNH-######',
+                processid: 'PROC-001',
+                cd_consultar_inscricao: 'CD-100',
+                hash_form: 'formhash123',
+                multiplas_inscricoes: false,
+                cargos: [
+                    { nome: 'Categoria A', vagas: 500, descricao: 'Motocicleta' },
+                    { nome: 'Categoria B', vagas: 1500, descricao: 'Automóvel' }
+                ]
+            },
+            {
+                id: 2,
+                nome: 'Processo Seletivo Educação 2026',
+                status: 'homologacao',
+                etapa_atual: 'Em configuração',
+                hash_drive: 'def456drive',
+                conteudo: '',
+                descricao: '',
+                edital: '',
+                url_recurso: '',
+                url_formulario: '',
+                mascara_inscricao: '',
+                processid: '',
+                cd_consultar_inscricao: '',
+                hash_form: '',
+                multiplas_inscricoes: true,
+                cargos: []
+            },
+            {
+                id: 3,
+                nome: 'Seleção Saúde Municipal 2025',
+                status: 'Inativo',
+                etapa_atual: 'Encerrado',
+                hash_drive: 'ghi789drive',
+                conteudo: '<h3>Processo Encerrado</h3>',
+                descricao: 'Seleção para profissionais de saúde.',
+                edital: 'https://drive.google.com/edital-saude',
+                url_recurso: '',
+                url_formulario: '',
+                mascara_inscricao: 'SAU-######',
+                processid: 'PROC-003',
+                cd_consultar_inscricao: 'CD-300',
+                hash_form: 'formhash789',
+                multiplas_inscricoes: false,
+                cargos: [
+                    { nome: 'Enfermeiro', vagas: 50, descricao: 'Nível superior' }
+                ]
+            }
+        ];
+
+        const mockComunicados = [
+            { id: 1, id_selecao: 1, descricao: 'Edital de Abertura', url: 'https://drive.google.com/edital', mimetype: 'application/pdf' },
+            { id: 2, id_selecao: 1, descricao: 'Errata do Edital', url: 'https://drive.google.com/errata', mimetype: 'application/pdf' },
+            { id: 3, id_selecao: 3, descricao: 'Resultado Final', url: 'https://drive.google.com/resultado', mimetype: 'application/pdf' }
+        ];
+
+        const mockCronogramas = {
+            1: {
+                inicio_inscricoes: '2026-04-01',
+                termino_inscricoes: '2026-04-30',
+                inicio_impugnacao: '2026-05-01',
+                termino_impugnacao: '2026-05-10',
+                publicacao_concorrencia: '2026-05-12',
+                resultado_preliminar_pcd: '2026-05-20',
+                inicio_recurso_pcd: '2026-05-21',
+                termino_recurso_pcd: '2026-05-23',
+                resultado_definitivo_pcd: '2026-05-28',
+                resultado_preliminar_analise_curricular: '2026-06-05',
+                resultado_preliminar_ppni: '2026-06-08',
+                inicio_recurso_avaliacao_curricular: '2026-06-09',
+                termino_recurso_avaliacao_curricular: '2026-06-11',
+                convocacao_pcd: '2026-06-14',
+                inicio_avaliacao_pcd: '2026-06-16',
+                termino_avaliacao_pcd: '2026-06-18',
+                publicacao_resultado_pcd: '2026-06-22',
+                inicio_recurso_resultado_preliminar_avaliacao_pcd: '2026-06-23',
+                termino_recurso_resultado_preliminar_avaliacao_pcd: '2026-06-24',
+                resultado_final: '2026-07-01',
+                inicio_recurso_ppni: '2026-06-12',
+                termino_recurso_ppni: '2026-06-13'
+            }
+        };
+
+        // ===========================
+        // NAVIGATION (SPA)
+        // ===========================
+        function navigateTo(page) {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+
+            const target = document.getElementById('page-' + page);
+            if (target) target.classList.add('active');
+
+            const link = document.querySelector(`.nav-link[data-page="${page}"]`);
+            if (link) link.classList.add('active');
+
+            // Close mobile sidebar
+            document.getElementById('sidebar').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+        }
+
+        function formatDateForInput(value) {
+            if (!value) return '';
+            if (typeof value === 'string') {
+                const isoDateOnly = value.match(/^(\d{4}-\d{2}-\d{2})/);
+                if (isoDateOnly) return isoDateOnly[1];
+
+                const parsed = new Date(value);
+                if (!isNaN(parsed.getTime())) {
+                    return parsed.toISOString().slice(0, 10);
+                }
+                return '';
+            }
+
+            if (value instanceof Date && !isNaN(value.getTime())) {
+                return value.toISOString().slice(0, 10);
+            }
+
+            return '';
+        }
+
+        document.querySelectorAll('.nav-link[data-page]').forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                if (link.dataset.page === 'selecao-form') {
+                    resetSelecaoForm();
+                }
+                navigateTo(link.dataset.page);
+            });
+        });
+
+        // Mobile toggle
+        document.getElementById('mobile-toggle').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('show');
+            document.getElementById('overlay').classList.toggle('show');
+        });
+        document.getElementById('overlay').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+        });
+
+        // ===========================
+        // VIEW TOGGLE
+        // ===========================
+        function setView(view) {
+            currentView = view;
+            document.getElementById('btn-view-table').classList.toggle('active', view === 'table');
+            document.getElementById('btn-view-grid').classList.toggle('active', view === 'grid');
+            document.getElementById('view-table').classList.toggle('d-none', view !== 'table');
+            document.getElementById('view-grid').classList.toggle('d-none', view !== 'grid');
+        }
+
+        // ===========================
+        // FETCH SELEÇÕES
+        // ===========================
+        async function fetchSelecoes() {
+            if (CONFIG.MOCK) {
+                selecoes = [...mockSelecoes];
+            } else {
+                try {
+                    const data = await api.getSelecoes();
+                    selecoes = Array.isArray(data) ? data : [];
+                } catch (e) {
+                    console.error('Erro ao buscar seleções:', e);
+                    showToast('Erro ao carregar seleções: ' + e.message, 'danger');
+                    selecoes = [];
+                }
+            }
+            renderHome();
+            populateSelects();
+        }
+
+        // ===========================
+        // RENDER HOME
+        // ===========================
+        function renderHome() {
+            const filtered = getFilteredSelecoes();
+            renderStats();
+            renderTable(filtered);
+            renderGrid(filtered);
+        }
+
+        function getFilteredSelecoes() {
+            const search = document.getElementById('searchHome').value.toLowerCase();
+            const status = document.getElementById('filterStatus').value;
+            const etapa = document.getElementById('filterEtapa').value;
+            return selecoes.filter(s => {
+                const matchName = s.nome.toLowerCase().includes(search);
+                const matchStatus = !status || s.status === status;
+                const matchEtapa = !etapa || (s.etapa_atual || '').toLowerCase() === etapa.toLowerCase();
+                return matchName && matchStatus && matchEtapa;
+            });
+        }
+
+        function filterSelecoes() {
+            renderHome();
+        }
+
+        function renderStats() {
+            document.getElementById('stat-total').textContent = selecoes.length;
+            document.getElementById('stat-ativos').textContent = selecoes.filter(s => s.status === 'Ativo').length;
+            document.getElementById('stat-inativos').textContent = selecoes.filter(s => s.status === 'Inativo').length;
+            document.getElementById('stat-homologacao').textContent = selecoes.filter(s => s.status === 'homologacao').length;
+        }
+
+        function getStatusBadge(status) {
+            const map = {
+                'Ativo': '<span class="status-badge status-ativo"><i class="fas fa-check-circle"></i>Ativo</span>',
+                'Inativo': '<span class="status-badge status-inativo"><i class="fas fa-times-circle"></i>Inativo</span>',
+                'homologacao': '<span class="status-badge status-homologacao"><i class="fas fa-gavel"></i>Homologação</span>',
+                'concluido': '<span class="status-badge status-concluido"><i class="fas fa-flag-checkered"></i>Concluído</span>'
+            };
+            return map[status] || `<span class="status-badge">${status}</span>`;
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('table-body');
+            const empty = document.getElementById('table-empty');
+
+            if (!data.length) {
+                tbody.innerHTML = '';
+                empty.classList.remove('d-none');
+                return;
+            }
+            empty.classList.add('d-none');
+
+            tbody.innerHTML = data.map(s => `
+                <tr>
+                    <td style="padding: 1rem 1.5rem;">
+                        <span class="fw-bold text-primary">#${s.id}</span>
+                    </td>
+                    <td>
+                        <div class="fw-bold">${s.nome}</div>
+                    </td>
+                    <td>
+                        <span class="text-muted small">${s.etapa_atual || '—'}</span>
+                    </td>
+                    <td>${getStatusBadge(s.status)}</td>
+                    <td class="text-center">
+                        <div class="d-flex gap-1 justify-content-center">
+                            <a href="#" class="action-btn" title="Editar Configurações" onclick="editSelecao(${s.id})">
+                                <i class="fas fa-pencil"></i>
+                            </a>
+                            <a href="#" class="action-btn" title="Gerenciar Cronograma" onclick="gotoCronograma(${s.id})">
+                                <i class="fas fa-calendar-alt"></i>
+                            </a>
+                            <a href="#" class="action-btn" title="Gerenciar Comunicados" onclick="gotoComunicados(${s.id})">
+                                <i class="fas fa-bullhorn"></i>
+                            </a>
+                            <a href="#" class="action-btn" title="Preview" onclick="previewSelecao(${s.id})">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderGrid(data) {
+            const grid = document.getElementById('grid-body');
+            const empty = document.getElementById('grid-empty');
+
+            if (!data.length) {
+                grid.innerHTML = '';
+                empty.classList.remove('d-none');
+                return;
+            }
+            empty.classList.add('d-none');
+
+            grid.innerHTML = data.map(s => `
+                <div class="col-md-6 col-lg-4">
+                    <div class="card selecao-card">
+                        <div class="card-top-accent"></div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="text-muted small fw-bold">#${s.id}</span>
+                                ${getStatusBadge(s.status)}
+                            </div>
+                            <h6 class="card-title">${s.nome}</h6>
+                            <div class="mb-3">
+                                <div class="meta-label">Etapa Atual</div>
+                                <div class="meta-value">${s.etapa_atual || '—'}</div>
+                            </div>
+                            <div class="d-flex gap-1 pt-2 border-top">
+                                <a href="#" class="action-btn flex-fill justify-content-center" title="Editar" onclick="editSelecao(${s.id})">
+                                    <i class="fas fa-pencil"></i>
+                                </a>
+                                <a href="#" class="action-btn flex-fill justify-content-center" title="Cronograma" onclick="gotoCronograma(${s.id})">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </a>
+                                <a href="#" class="action-btn flex-fill justify-content-center" title="Comunicados" onclick="gotoComunicados(${s.id})">
+                                    <i class="fas fa-bullhorn"></i>
+                                </a>
+                                <a href="#" class="action-btn flex-fill justify-content-center" title="Preview" onclick="previewSelecao(${s.id})">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ===========================
+        // POPULATE SELECTS
+        // ===========================
+        function populateSelects() {
+            const opts = selecoes.map(s => `<option value="${s.id}">${s.nome}</option>`).join('');
+            const base = '<option value="">-- Escolha uma seleção --</option>';
+            document.getElementById('crono-selecao').innerHTML = base + opts;
+            document.getElementById('com-selecao').innerHTML = base + opts;
+        }
+
+        // ===========================
+        // WIZARD TABS
+        // ===========================
+        function switchWizard(tabId) {
+            document.querySelectorAll('.wizard-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.wizard-panel').forEach(p => p.classList.remove('active'));
+
+            document.querySelector(`.wizard-tab[data-wizard="${tabId}"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // ===========================
+        // SELECAO FORM: RESET / LOAD
+        // ===========================
+        function voltarSelecao() {
+            const isNova = !document.getElementById('sel-id').value;
+            const temConteudo = [
+                document.getElementById('sel-nome').value.trim(),
+                document.getElementById('sel-conteudo').value.trim(),
+                document.getElementById('sel-descricao').value.trim()
+            ].some(v => v.length > 0) || document.getElementById('cargos-container').querySelectorAll('.cargo-item').length > 0;
+
+            if (isNova && temConteudo) {
+                const modal = new bootstrap.Modal(document.getElementById('modalRascunho'));
+
+                document.getElementById('btnDescartarRascunho').onclick = () => {
+                    modal.hide();
+                    resetSelecaoForm();
+                    navigateTo('home');
+                };
+
+                document.getElementById('btnSalvarRascunho').onclick = async () => {
+                    modal.hide();
+                    const nomeCampo = document.getElementById('sel-nome');
+                    if (!nomeCampo.value.trim()) {
+                        nomeCampo.value = 'Nova Seleção ' + new Date().toLocaleDateString('pt-BR');
+                    }
+                    await salvarSelecao('homologacao');
+                };
+
+                modal.show();
+            } else {
+                resetSelecaoForm();
+                navigateTo('home');
+            }
+        }
+
+        function resetSelecaoForm() {
+            document.getElementById('form-page-title').textContent = 'Nova Seleção';
+            document.getElementById('sel-id').value = '';
+            document.getElementById('sel-nome').value = '';
+            document.getElementById('sel-status').value = 'homologacao';
+            document.getElementById('sel-conteudo').value = '';
+            document.getElementById('sel-descricao').value = '';
+            document.getElementById('sel-edital').value = '';
+            document.getElementById('sel-multiplas').checked = false;
+            document.getElementById('cargos-container').innerHTML =
+                '<div class="text-center text-muted py-3" id="cargos-empty"><i class="fas fa-briefcase fa-2x mb-2 d-block opacity-50"></i>Nenhum cargo adicionado. Clique em "+ Adicionar Cargo".</div>';
+            cargoCounter = 0;
+            switchWizard('tab-dados');
+        }
+
+        function editSelecao(id) {
+            const s = selecoes.find(x => x.id === id);
+            if (!s) return;
+
+            document.getElementById('form-page-title').textContent = 'Editar Seleção #' + s.id;
+            document.getElementById('sel-id').value = s.id;
+            document.getElementById('sel-nome').value = s.nome || '';
+            document.getElementById('sel-status').value = s.status || 'homologacao';
+            document.getElementById('sel-conteudo').value = s.conteudo || '';
+            document.getElementById('sel-descricao').value = s.descricao || '';
+            document.getElementById('sel-edital').value = s.edital || '';
+            document.getElementById('sel-multiplas').checked = !!s.multiplas_inscricoes;
+
+            // Cargos
+            const container = document.getElementById('cargos-container');
+            container.innerHTML = '';
+            cargoCounter = 0;
+            if (s.cargos && s.cargos.length) {
+                s.cargos.forEach(c => addCargo(c));
+            } else {
+                container.innerHTML =
+                    '<div class="text-center text-muted py-3" id="cargos-empty"><i class="fas fa-briefcase fa-2x mb-2 d-block opacity-50"></i>Nenhum cargo adicionado. Clique em "+ Adicionar Cargo".</div>';
+            }
+
+            switchWizard('tab-dados');
+            // Abre a página sem marcar nenhum item no sidebar (edição ≠ nova seleção)
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            const editPage = document.getElementById('page-selecao-form');
+            if (editPage) editPage.classList.add('active');
+            document.getElementById('sidebar').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+        }
+
+        // ===========================
+        // CARGOS
+        // ===========================
+        function parseCargoValue(raw) {
+            if (typeof raw === 'string') {
+                const [nivel = '', cargo = '', especialidade = ''] = raw.split('|');
+                return { nivel, cargo, especialidade };
+            }
+
+            if (raw && typeof raw === 'object') {
+                return {
+                    nivel: raw.nivel || '',
+                    cargo: raw.cargo || raw.nome || '',
+                    especialidade: raw.especialidade || raw.descricao || ''
+                };
+            }
+
+            return { nivel: '', cargo: '', especialidade: '' };
+        }
+
+        function addCargo(data) {
+            const container = document.getElementById('cargos-container');
+            const empty = document.getElementById('cargos-empty');
+            if (empty) empty.remove();
+
+            cargoCounter++;
+            const idx = cargoCounter;
+            const cargoData = parseCargoValue(data);
+            const div = document.createElement('div');
+            div.className = 'cargo-item';
+            div.id = 'cargo-' + idx;
+            div.innerHTML = `
+                <span class="remove-cargo" onclick="removeCargo(${idx})" title="Remover cargo"><i class="fas fa-trash-alt"></i></span>
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <label class="form-label">Nível</label>
+                        <select class="form-select form-select-sm cargo-nivel">
+                            <option value="">Selecione...</option>
+                            <option value="Fundamental" ${cargoData.nivel === 'Fundamental' ? 'selected' : ''}>Fundamental</option>
+                            <option value="Médio" ${(cargoData.nivel === 'Médio' || cargoData.nivel === 'Medio') ? 'selected' : ''}>Médio</option>
+                            <option value="Técnico" ${(cargoData.nivel === 'Técnico' || cargoData.nivel === 'Tecnico') ? 'selected' : ''}>Técnico</option>
+                            <option value="Graduação" ${cargoData.nivel === 'Graduação' ? 'selected' : ''}>Graduação</option>
+                            <option value="Pós-graduação" ${cargoData.nivel === 'Pós-graduação' ? 'selected' : ''}>Pós-graduação</option>
+                            <option value="Mestrado" ${cargoData.nivel === 'Mestrado' ? 'selected' : ''}>Mestrado</option>
+                            <option value="Doutorado" ${cargoData.nivel === 'Doutorado' ? 'selected' : ''}>Doutorado</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Cargo</label>
+                        <input type="text" class="form-control form-control-sm cargo-cargo" value="${cargoData.cargo}" placeholder="Ex: Analista em Saude Animal - Veterinario 20h">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Especialidade</label>
+                        <input type="text" class="form-control form-control-sm cargo-especialidade" value="${cargoData.especialidade}" placeholder="Ex: Dermatologia">
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeCargo(idx) {
+            const el = document.getElementById('cargo-' + idx);
+            if (el) el.remove();
+            if (!document.querySelectorAll('.cargo-item').length) {
+                document.getElementById('cargos-container').innerHTML =
+                    '<div class="text-center text-muted py-3" id="cargos-empty"><i class="fas fa-briefcase fa-2x mb-2 d-block opacity-50"></i>Nenhum cargo adicionado. Clique em "+ Adicionar Cargo".</div>';
+            }
+        }
+
+        function collectCargos() {
+            const items = document.querySelectorAll('.cargo-item');
+            return Array.from(items)
+                .map(item => {
+                    const nivel = (item.querySelector('.cargo-nivel')?.value || '').trim();
+                    const cargo = (item.querySelector('.cargo-cargo')?.value || '').trim();
+                    const especialidade = (item.querySelector('.cargo-especialidade')?.value || '').trim();
+                    if (!nivel && !cargo && !especialidade) return null;
+                    return `${nivel}|${cargo}|${especialidade}`;
+                })
+                .filter(Boolean);
+        }
+
+        function buildPreviewPayloadFromForm() {
+            return {
+                id_selecao: document.getElementById('sel-id').value || null,
+                selecao: document.getElementById('sel-nome').value,
+                status: document.getElementById('sel-status').value,
+                hash_drive: DEFAULT_HASH_DRIVE,
+                conteudo: document.getElementById('sel-conteudo').value,
+                descricao: document.getElementById('sel-descricao').value,
+                multiplas_inscricoes: document.getElementById('sel-multiplas').checked,
+                cargos: collectCargos(),
+                termino_recurso_resultado_preliminar_avaliacao_pcd: document.getElementById('crono-termino_recurso_resultado_preliminar_avaliacao_pcd')?.value || null,
+                inicio_recurso_ppni: document.getElementById('crono-inicio_recurso_ppni')?.value || null,
+                termino_recurso_ppni: document.getElementById('crono-termino_recurso_ppni')?.value || null,
+                resultado_final: document.getElementById('crono-resultado_final')?.value || null
+            };
+        }
+
+        function extractPreviewHtml(rawText) {
+            let htmlContent = '';
+
+            try {
+                const data = JSON.parse(rawText);
+                if (Array.isArray(data)) {
+                    htmlContent = data[0]?.html || data[0]?.body?.html || '';
+                } else if (data && typeof data === 'object') {
+                    htmlContent = data.html || data?.body?.html || '';
+                }
+            } catch {
+                htmlContent = rawText;
+            }
+
+            if (!htmlContent || !String(htmlContent).trim()) {
+                throw new Error('Webhook respondeu sem o campo html para montar o preview.');
+            }
+
+            return String(htmlContent);
+        }
+
+        async function fetchPreviewHtml(payload) {
+            const response = await fetch('https://webhook-n8n-dev-conectarecife.recife.pe.gov.br/webhook/direcionarportal1', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const rawText = await response.text();
+            return extractPreviewHtml(rawText);
+        }
+
+        function renderPreviewIframe(container, htmlContent, height = '600px') {
+            container.style.display = 'block';
+            container.innerHTML = '';
+
+            const iframe = document.createElement('iframe');
+            iframe.style.width = '100%';
+            iframe.style.height = height;
+            iframe.style.border = 'none';
+            iframe.style.borderRadius = '0.6rem';
+            iframe.referrerPolicy = 'no-referrer';
+            iframe.sandbox.add('allow-same-origin');
+            iframe.sandbox.add('allow-scripts');
+            iframe.sandbox.add('allow-popups');
+            iframe.sandbox.add('allow-popups-to-escape-sandbox');
+
+            // Suprime erros de navegação de histórico no contexto about:srcdoc.
+            const historyPatch = '<script>try{history.replaceState=function(){};history.pushState=function(){};}catch(e){}<\/script>';
+            iframe.srcdoc = String(htmlContent).replace(/(<head[^>]*>)/i, '$1' + historyPatch);
+            container.appendChild(iframe);
+        }
+
+        async function openModalPreviewFromPayload(payload) {
+            const previewContent = document.getElementById('preview-content');
+            previewContent.innerHTML =
+                '<div class="text-center py-5"><div class="spinner-border" role="status"><span class="visually-hidden">Carregando preview...</span></div></div>';
+
+            const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+            modal.show();
+
+            try {
+                const htmlContent = await fetchPreviewHtml(payload);
+                renderPreviewIframe(previewContent, htmlContent, '70vh');
+            } catch (e) {
+                previewContent.innerHTML =
+                    `<div class="alert alert-danger m-2" role="alert"><strong>Erro ao carregar preview:</strong> ${e.message}</div>`;
+                showToast('Erro ao carregar preview: ' + e.message, 'danger');
+            }
+        }
+
+        // ===========================
+        // GO TO PREVIEW
+        // ===========================
+        async function goToPreview() {
+            const nome = document.getElementById('sel-nome').value;
+
+            if (!nome.trim()) {
+                showToast('Preencha o nome da seleção.', 'warning');
+                switchWizard('tab-dados');
+                return;
+            }
+
+            const payload = buildPreviewPayloadFromForm();
+
+            const previewContainer = document.getElementById('preview-iframe-container');
+            previewContainer.style.display = 'block';
+            previewContainer.innerHTML =
+                '<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Carregando preview...</span></div></div>';
+
+            try {
+                const htmlContent = await fetchPreviewHtml(payload);
+                renderPreviewIframe(previewContainer, htmlContent);
+
+                // Switch para a aba de preview
+                switchWizard('tab-preview');
+                showToast('Preview carregado com sucesso!');
+
+            } catch (e) {
+                const errContainer = document.getElementById('preview-iframe-container');
+                errContainer.style.display = 'block';
+                errContainer.innerHTML =
+                    `<div class="alert alert-danger m-3" role="alert"><strong>Erro ao carregar preview:</strong> ${e.message}</div>`;
+                console.error('Erro ao carregar preview:', e);
+                showToast('Erro ao carregar preview: ' + e.message, 'danger');
+            }
+        }
+
+        // ===========================
+        // SAVE SELECAO
+        // ===========================
+        async function salvarSelecao(forceStatus = null) {
+            const payload = {
+                id: document.getElementById('sel-id').value || null,
+                nome: document.getElementById('sel-nome').value,
+                status: forceStatus ?? document.getElementById('sel-status').value,
+                hash_drive: DEFAULT_HASH_DRIVE,
+                conteudo: document.getElementById('sel-conteudo').value,
+                descricao: document.getElementById('sel-descricao').value,
+                edital: document.getElementById('sel-edital').value,
+                multiplas_inscricoes: document.getElementById('sel-multiplas').checked,
+                cargos: collectCargos()
+            };
+
+            if (!payload.nome.trim()) {
+                showToast('Preencha o nome da seleção.', 'warning');
+                switchWizard('tab-dados');
+                return;
+            }
+
+            if (CONFIG.MOCK) {
+                if (payload.id) {
+                    const idx = selecoes.findIndex(s => s.id == payload.id);
+                    if (idx >= 0) selecoes[idx] = { ...selecoes[idx], ...payload };
+                } else {
+                    payload.id = selecoes.length ? Math.max(...selecoes.map(s => s.id)) + 1 : 1;
+                    payload.etapa_atual = 'Em configuração';
+                    selecoes.push(payload);
+                }
+                renderHome();
+                populateSelects();
+                showToast('Seleção salva com sucesso!');
+                navigateTo('home');
+                return;
+            }
+
+            const isNova = !payload.id;
+
+            try {
+                await api.upsertSelecao(payload);
+                showToast('Seleção salva com sucesso!');
+                await fetchSelecoes();
+
+                if (isNova) {
+                    const modalAviso = new bootstrap.Modal(document.getElementById('modalAvisoCronograma'));
+                    modalAviso.show();
+                    document.getElementById('modalAvisoCronograma').addEventListener('hidden.bs.modal', function () {
+                        navigateTo('home');
+                    }, { once: true });
+                } else {
+                    navigateTo('home');
+                }
+            } catch (e) {
+                showToast('Erro ao salvar seleção: ' + e.message, 'danger');
+                console.error(e);
+            }
+        }
+
+        // ===========================
+        // PREVIEW PORTAL
+        // ===========================
+        async function previewPortal() {
+            const nome = document.getElementById('sel-nome').value;
+
+            if (!nome.trim()) {
+                showToast('Preencha o nome da seleção.', 'warning');
+                switchWizard('tab-dados');
+                return;
+            }
+
+            const payload = buildPreviewPayloadFromForm();
+            await openModalPreviewFromPayload(payload);
+        }
+
+        async function previewSelecao(id) {
+            const s = selecoes.find(x => x.id === id);
+            if (!s) return;
+
+            const payload = {
+                id_selecao: s.id,
+                selecao: s.nome,
+                status: s.status,
+                hash_drive: s.hash_drive || DEFAULT_HASH_DRIVE,
+                conteudo: s.conteudo || '',
+                descricao: s.descricao || '',
+                multiplas_inscricoes: !!s.multiplas_inscricoes,
+                cargos: Array.isArray(s.cargos) ? s.cargos : [],
+                termino_recurso_resultado_preliminar_avaliacao_pcd: null,
+                inicio_recurso_ppni: null,
+                termino_recurso_ppni: null,
+                resultado_final: null
+            };
+
+            if (!CONFIG.MOCK) {
+                try {
+                    const crono = await api.getCronograma(s.id);
+                    if (crono && typeof crono === 'object') {
+                        payload.termino_recurso_resultado_preliminar_avaliacao_pcd = crono.termino_recurso_resultado_preliminar_avaliacao_pcd || null;
+                        payload.inicio_recurso_ppni = crono.inicio_recurso_ppni || null;
+                        payload.termino_recurso_ppni = crono.termino_recurso_ppni || null;
+                        payload.resultado_final = crono.resultado_final || null;
+                    }
+                } catch (e) {
+                    console.warn('Nao foi possivel carregar cronograma para preview da selecao:', e);
+                }
+            }
+
+            await openModalPreviewFromPayload(payload);
+        }
+
+        // ===========================
+        // CRONOGRAMA
+        // ===========================
+        async function loadCronograma() {
+            const id = document.getElementById('crono-selecao').value;
+            const area = document.getElementById('crono-form-area');
+            const hint = document.getElementById('crono-status-hint');
+
+            if (!id) {
+                area.classList.add('d-none');
+                hint.textContent = '';
+                return;
+            }
+
+            area.classList.remove('d-none');
+            const sel = selecoes.find(s => s.id == id);
+            hint.innerHTML = sel ? `Status: ${getStatusBadge(sel.status)} &nbsp;|&nbsp; Etapa: <strong>${sel.etapa_atual || '—'}</strong>` : '';
+
+            let crono = {};
+            cronogramaExiste = false;
+            if (CONFIG.MOCK) {
+                crono = mockCronogramas[id] || {};
+                cronogramaExiste = !!mockCronogramas[id];
+            } else {
+                try {
+                    const data = await api.getCronograma(id);
+                    crono = (typeof data === 'object' && data) ? data : {};
+                    cronogramaExiste = !!(crono && Object.keys(crono).some(k => k !== 'id_selecao' && crono[k]));
+                } catch (e) {
+                    console.error('Erro ao carregar cronograma:', e);
+                    showToast('Erro ao carregar cronograma: ' + e.message, 'danger');
+                }
+            }
+
+            const fields = [
+                'inicio_inscricoes',
+                'termino_inscricoes',
+                'inicio_impugnacao',
+                'termino_impugnacao',
+                'publicacao_concorrencia',
+                'resultado_preliminar_pcd',
+                'inicio_recurso_pcd',
+                'termino_recurso_pcd',
+                'resultado_definitivo_pcd',
+                'resultado_preliminar_analise_curricular',
+                'resultado_preliminar_ppni',
+                'inicio_recurso_avaliacao_curricular',
+                'termino_recurso_avaliacao_curricular',
+                'convocacao_pcd',
+                'inicio_avaliacao_pcd',
+                'termino_avaliacao_pcd',
+                'publicacao_resultado_pcd',
+                'inicio_recurso_resultado_preliminar_avaliacao_pcd',
+                'termino_recurso_resultado_preliminar_avaliacao_pcd',
+                'resultado_final',
+                'inicio_recurso_ppni',
+                'termino_recurso_ppni'
+            ];
+
+            fields.forEach(field => {
+                const input = document.getElementById('crono-' + field);
+                if (input) {
+                    input.value = formatDateForInput(crono[field]);
+                }
+            });
+        }
+
+        async function salvarCronograma() {
+            const id = document.getElementById('crono-selecao').value;
+            if (!id) return showToast('Selecione uma seleção primeiro.', 'warning');
+
+            const payload = {
+                id_selecao: id,
+                inicio_inscricoes: document.getElementById('crono-inicio_inscricoes').value,
+                termino_inscricoes: document.getElementById('crono-termino_inscricoes').value,
+                inicio_impugnacao: document.getElementById('crono-inicio_impugnacao').value,
+                termino_impugnacao: document.getElementById('crono-termino_impugnacao').value,
+                publicacao_concorrencia: document.getElementById('crono-publicacao_concorrencia').value,
+                resultado_preliminar_pcd: document.getElementById('crono-resultado_preliminar_pcd').value,
+                inicio_recurso_pcd: document.getElementById('crono-inicio_recurso_pcd').value,
+                termino_recurso_pcd: document.getElementById('crono-termino_recurso_pcd').value,
+                resultado_definitivo_pcd: document.getElementById('crono-resultado_definitivo_pcd').value,
+                resultado_preliminar_analise_curricular: document.getElementById('crono-resultado_preliminar_analise_curricular').value,
+                resultado_preliminar_ppni: document.getElementById('crono-resultado_preliminar_ppni').value,
+                inicio_recurso_avaliacao_curricular: document.getElementById('crono-inicio_recurso_avaliacao_curricular').value,
+                termino_recurso_avaliacao_curricular: document.getElementById('crono-termino_recurso_avaliacao_curricular').value,
+                convocacao_pcd: document.getElementById('crono-convocacao_pcd').value,
+                inicio_avaliacao_pcd: document.getElementById('crono-inicio_avaliacao_pcd').value,
+                termino_avaliacao_pcd: document.getElementById('crono-termino_avaliacao_pcd').value,
+                publicacao_resultado_pcd: document.getElementById('crono-publicacao_resultado_pcd').value,
+                inicio_recurso_resultado_preliminar_avaliacao_pcd: document.getElementById('crono-inicio_recurso_resultado_preliminar_avaliacao_pcd').value,
+                termino_recurso_resultado_preliminar_avaliacao_pcd: document.getElementById('crono-termino_recurso_resultado_preliminar_avaliacao_pcd').value,
+                resultado_final: document.getElementById('crono-resultado_final').value,
+                inicio_recurso_ppni: document.getElementById('crono-inicio_recurso_ppni').value,
+                termino_recurso_ppni: document.getElementById('crono-termino_recurso_ppni').value
+            };
+
+            if (CONFIG.MOCK) {
+                mockCronogramas[id] = payload;
+                showToast('Cronograma salvo! A etapa atual será atualizada pela trigger do Postgres.');
+                return;
+            }
+
+            try {
+                await api.saveCronograma(payload, cronogramaExiste);
+                showToast('Cronograma salvo com sucesso!');
+                cronogramaExiste = true;
+                await fetchSelecoes(); // Refresh para pegar etapa_atual atualizada pela trigger
+            } catch (e) {
+                showToast('Erro ao salvar cronograma: ' + e.message, 'danger');
+            }
+        }
+
+        function gotoCronograma(id) {
+            navigateTo('cronograma');
+            document.getElementById('crono-selecao').value = id;
+            loadCronograma();
+        }
+
+        // ===========================
+        // COMUNICADOS
+        // ===========================
+        async function loadComunicados() {
+            const id = document.getElementById('com-selecao').value;
+            const btn = document.getElementById('btn-novo-comunicado');
+            const card = document.getElementById('com-list-card');
+
+            if (!id) {
+                btn.disabled = true;
+                card.style.display = 'none';
+                return;
+            }
+
+            btn.disabled = false;
+            card.style.display = 'block';
+
+            if (CONFIG.MOCK) {
+                comunicados = mockComunicados.filter(c => String(c.id_selecao) === String(id));
+            } else {
+                try {
+                    const data = await api.getComunicados(id);
+                    comunicados = Array.isArray(data)
+                        ? data.filter(c => String(c.id_selecao ?? c.selecao_id ?? '') === String(id))
+                        : [];
+                } catch (e) {
+                    console.error('Erro ao carregar comunicados:', e);
+                    comunicados = [];
+                }
+            }
+
+            renderComunicados();
+        }
+
+        function renderComunicados() {
+            const tbody = document.getElementById('com-table-body');
+            const empty = document.getElementById('com-empty');
+            const count = document.getElementById('com-count');
+
+            count.textContent = comunicados.length;
+
+            if (!comunicados.length) {
+                tbody.innerHTML = '';
+                empty.classList.remove('d-none');
+                return;
+            }
+            empty.classList.add('d-none');
+
+            const mimeLabels = {
+                'application/pdf': 'PDF',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'DOCX',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'XLSX',
+                'image/png': 'PNG',
+                'image/jpeg': 'JPEG',
+                'text/html': 'HTML'
+            };
+
+            tbody.innerHTML = comunicados.map(c => `
+                <tr>
+                    <td style="padding: 1rem 1.5rem;"><div class="fw-500">${c.descricao}</div></td>
+                    <td><span class="badge bg-light text-dark border">${mimeLabels[c.mimetype] || c.mimetype}</span></td>
+                    <td>
+                        <a href="${c.url}" target="_blank" class="text-primary text-decoration-none small">
+                            <i class="fas fa-external-link-alt me-1"></i>Abrir
+                        </a>
+                    </td>
+                    <td class="text-center">
+                        <div class="d-flex gap-1 justify-content-center">
+                            <a href="#" class="action-btn" title="Editar" onclick='editComunicado(${JSON.stringify(c.id)})'>
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="#" class="action-btn" title="Excluir" onclick='deleteComunicado(${JSON.stringify(c.id)})' style="color:#dc3545;">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openComunicadoModal(data) {
+            document.getElementById('comunicado-modal-title').innerHTML = data
+                ? '<i class="fas fa-edit me-2"></i>Editar Comunicado'
+                : '<i class="fas fa-bullhorn me-2"></i>Novo Comunicado';
+            document.getElementById('com-edit-id').value = data?.id || '';
+            document.getElementById('com-descricao').value = data?.descricao || '';
+            document.getElementById('com-url').value = data?.url || '';
+            document.getElementById('com-mimetype').value = data?.mimetype || 'application/pdf';
+            new bootstrap.Modal(document.getElementById('comunicadoModal')).show();
+        }
+
+        function editComunicado(id) {
+            const c = comunicados.find(x => String(x.id) === String(id));
+            if (c) openComunicadoModal(c);
+        }
+
+        function generateComunicadoId() {
+            const stamp = Date.now().toString(36).toUpperCase();
+            const rand = Math.random().toString(36).slice(2, 8).toUpperCase();
+            return `COM${stamp}${rand}`;
+        }
+
+        async function salvarComunicado() {
+            const idSelecao = document.getElementById('com-selecao').value;
+            const existingId = document.getElementById('com-edit-id').value || null;
+            const payload = {
+                id: existingId || generateComunicadoId(),
+                is_new: !existingId,
+                id_selecao: idSelecao,
+                descricao: document.getElementById('com-descricao').value,
+                url: document.getElementById('com-url').value,
+                mimetype: document.getElementById('com-mimetype').value
+            };
+
+            if (!payload.descricao.trim() || !payload.url.trim()) {
+                showToast('Preencha descrição e URL.', 'warning');
+                return;
+            }
+
+            if (CONFIG.MOCK) {
+                const idx = mockComunicados.findIndex(c => String(c.id) === String(payload.id));
+                if (idx >= 0) {
+                    Object.assign(mockComunicados[idx], payload);
+                } else {
+                    payload.id_selecao = parseInt(idSelecao);
+                    mockComunicados.push(payload);
+                }
+                bootstrap.Modal.getInstance(document.getElementById('comunicadoModal')).hide();
+                showToast('Comunicado salvo!');
+                loadComunicados();
+                return;
+            }
+
+            try {
+                await api.saveComunicado(payload);
+                bootstrap.Modal.getInstance(document.getElementById('comunicadoModal')).hide();
+                showToast('Comunicado salvo!');
+                loadComunicados();
+            } catch (e) {
+                showToast('Erro ao salvar comunicado: ' + e.message, 'danger');
+            }
+        }
+
+        async function deleteComunicado(id) {
+            if (!confirm('Deseja realmente excluir este comunicado?')) return;
+
+            if (CONFIG.MOCK) {
+                const idx = mockComunicados.findIndex(c => String(c.id) === String(id));
+                if (idx >= 0) mockComunicados.splice(idx, 1);
+                showToast('Comunicado excluído.');
+                loadComunicados();
+                return;
+            }
+
+            try {
+                await api.deleteComunicado(id);
+                showToast('Comunicado excluído.');
+                loadComunicados();
+            } catch (e) {
+                showToast('Erro ao excluir: ' + e.message, 'danger');
+            }
+        }
+
+        function gotoComunicados(id) {
+            navigateTo('comunicados');
+            document.getElementById('com-selecao').value = id;
+            loadComunicados();
+        }
+
+        // ===========================
+        // TOAST
+        // ===========================
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            toast.className = `toast align-items-center text-bg-${type} border-0`;
+            toastMsg.textContent = msg;
+            new bootstrap.Toast(toast, { delay: 3000 }).show();
+        }
+
+        // ===========================
+        // TOOLTIPS
+        // ===========================
+        document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+            new bootstrap.Tooltip(el);
+        });
+
+        // ===========================
+        // LOGIN HANDLER
+        // ===========================
+        async function handleLogin(e) {
+            if (!document.getElementById('login-btn')) return false;
+            e.preventDefault();
+            const btn = document.getElementById('login-btn');
+            const btnText = document.getElementById('login-btn-text');
+            const btnLoad = document.getElementById('login-btn-loading');
+            const errorDiv = document.getElementById('login-error');
+
+            btn.disabled = true;
+            btnText.classList.add('d-none');
+            btnLoad.classList.remove('d-none');
+            errorDiv.classList.add('d-none');
+
+            const usuario = document.getElementById('login-user').value.trim();
+            const senha = document.getElementById('login-pass').value;
+
+            try {
+                await auth.login(usuario, senha);
+                initApp();
+            } catch (err) {
+                errorDiv.textContent = err.message;
+                errorDiv.classList.remove('d-none');
+            } finally {
+                btn.disabled = false;
+                btnText.classList.remove('d-none');
+                btnLoad.classList.add('d-none');
+            }
+
+            return false;
+        }
+
+        // ===========================
+        // LOGOUT
+        // ===========================
+        function handleLogout() {
+            window.location.reload();
+        }
+
+        // ===========================
+        // INIT APP (após login)
+        // ===========================
+        function initApp() {
+            const loginScreen = document.getElementById('login-screen');
+            const appWrapper = document.getElementById('app-wrapper');
+            if (loginScreen) loginScreen.classList.add('d-none');
+            if (appWrapper) appWrapper.classList.add('authenticated');
+
+            const user = auth.getUser();
+            if (user) {
+                const initials = user.nomeIniciais ||
+                    (user.nome || 'AD').split(' ').slice(0, 2).map(n => (n[0] || '').toUpperCase()).join('');
+                const displayName = user.nomeCurto ||
+                    (user.nome || 'Administrador').toUpperCase();
+                const perfilLabel = user.perfilUC || user.perfil || 'GESTOR SAD';
+
+                const avatar = document.getElementById('sidebar-user-avatar');
+                const name = document.getElementById('sidebar-user-name');
+                const perfil = document.getElementById('sidebar-user-perfil');
+                if (avatar) avatar.textContent = initials;
+                if (name) name.textContent = displayName;
+                if (perfil) perfil.textContent = perfilLabel;
+            }
+
+            fetchSelecoes();
+        }
+
+        // ===========================
+        // BOOT — verifica sessão existente
+        // ===========================
+        (function boot() {
+            initApp();
+        })();
+    </script>
+</body>
+
+</html>
