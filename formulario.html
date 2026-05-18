@@ -2178,16 +2178,23 @@
       const addItemToMap = (item) => {
         if (!item) return;
         if (typeof item === 'object') {
-            // Try common keys from n8n or generic ones
-            const val = item.cargo || item.cargos || item.cargo_nome || item.descricao || 
-                        item.value || item.text || item.name || item.nome || 
+            // Objeto com campos explícitos nivel/cargo (formato salvo pelo admin-portal)
+            if ('nivel' in item || 'cargo' in item || 'nome' in item) {
+                const nivel = String(item.nivel || 'TODOS').trim();
+                const cargo = String(item.cargo || item.nome || '').trim();
+                const especialidade = String(item.especialidade || item.descricao || '').trim();
+                if (cargo) processStringToken(`${nivel}|${cargo}|${especialidade}`);
+                return;
+            }
+            // Fallback genérico para outros formatos do n8n
+            const val = item.cargos || item.cargo_nome || item.value || item.text ||
                         Object.values(item)[0];
             if (typeof val === 'string') {
                 val.split(';').forEach(sub => processStringToken(sub.trim()));
             } else if (Array.isArray(val)) {
                 val.forEach(addItemToMap);
             } else if (typeof val === 'object') {
-                addItemToMap(val); // Recursive for nested objects if n8n gives one
+                addItemToMap(val);
             }
             return;
         }
@@ -3004,7 +3011,8 @@
       const value = select.dataset.prefill?.trim();
       if (!value) return;
       if (!select.options || !select.options.length) return;
-      const option = Array.from(select.options).find((opt) => opt.value.toUpperCase() === value.toUpperCase());
+      const norm = (v) => String(v || '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toUpperCase();
+      const option = Array.from(select.options).find((opt) => norm(opt.value) === norm(value));
       if (option) {
         select.value = option.value;
         select.dispatchEvent(new Event('change', { bubbles: true }));
