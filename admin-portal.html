@@ -1824,14 +1824,14 @@
                 });
             },
 
-            async deleteSelecao(id) {
-                await Promise.all([
-                    this.request(CONFIG.WEBHOOKS.comunicados, { method: 'POST', body: { query: `DELETE FROM "sad-selecoes".comunicados WHERE id_selecao = ${id}` } }),
-                    this.request(CONFIG.WEBHOOKS.cronogramas,  { method: 'POST', body: { query: `DELETE FROM "sad-selecoes".cronograma WHERE id_selecao = ${id}` } }),
-                    this.request(CONFIG.WEBHOOKS.forms,        { method: 'POST', body: { query: `DELETE FROM "sad-selecoes".estrutura_html_forms WHERE id_selecao = ${id}` } }),
-                    this.request(CONFIG.WEBHOOKS.portais,      { method: 'POST', body: { query: `DELETE FROM "sad-selecoes".estrutura_html_portais WHERE id_selecao = ${id}` } }),
-                ]);
-                await this.request(CONFIG.WEBHOOKS.selecoes, { method: 'POST', body: { query: `DELETE FROM "sad-selecoes".selecoes_cadastradas WHERE id = ${id}` } });
+            deleteSelecao(id) {
+                const delSql =
+                    `WITH del_comunicados AS (DELETE FROM "sad-selecoes".comunicados WHERE id_selecao = ${id}),` +
+                    ` del_cronograma AS (DELETE FROM "sad-selecoes".cronograma WHERE id_selecao = ${id}),` +
+                    ` del_forms AS (DELETE FROM "sad-selecoes".estrutura_html_forms WHERE id_selecao = ${id}),` +
+                    ` del_portais AS (DELETE FROM "sad-selecoes".estrutura_html_portais WHERE id_selecao = ${id})` +
+                    ` DELETE FROM "sad-selecoes".selecoes_cadastradas WHERE id = ${id}`;
+                return this.request(CONFIG.WEBHOOKS.selecoes, { method: 'POST', body: { query: delSql } });
             }
         };
 
@@ -2222,7 +2222,7 @@
                             <a href="#" class="action-btn" title="Preview" onclick="previewSelecao(${s.id})">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <a href="#" class="action-btn" title="Excluir seleção" onclick="deleteSelecao(${s.id}, ${JSON.stringify(s.nome)})" style="color:#dc3545;">
+                            <a href="#" class="action-btn" title="Excluir seleção" onclick="deleteSelecao(${s.id})" style="color:#dc3545;">
                                 <i class="fas fa-trash-alt"></i>
                             </a>
                         </div>
@@ -2269,7 +2269,7 @@
                                 <a href="#" class="action-btn flex-fill justify-content-center" title="Preview" onclick="previewSelecao(${s.id})">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="#" class="action-btn flex-fill justify-content-center" title="Excluir seleção" onclick="deleteSelecao(${s.id}, ${JSON.stringify(s.nome)})" style="color:#dc3545;">
+                                <a href="#" class="action-btn flex-fill justify-content-center" title="Excluir seleção" onclick="deleteSelecao(${s.id})" style="color:#dc3545;">
                                     <i class="fas fa-trash-alt"></i>
                                 </a>
                             </div>
@@ -2970,7 +2970,9 @@
             }
         }
 
-        async function deleteSelecao(id, nome) {
+        async function deleteSelecao(id) {
+            const s = selecoes.find(x => x.id === id);
+            const nome = s ? s.nome : String(id);
             document.getElementById('excluir-selecao-nome').textContent = `"${nome}"`;
 
             const modal = new bootstrap.Modal(document.getElementById('modalExcluirSelecao'));
