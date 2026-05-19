@@ -1420,20 +1420,11 @@
         </div>
       </section>
             </form>
-            <div class="submission-success" id="submissionSuccess" aria-live="polite">
-                <div class="card p-5 text-center">
-                    <div class="success-animation">🎉</div>
-                    <h2 class="mb-3">Sua inscrição está sendo processada!</h2>
-                    <p class="text-muted mb-4">Aguarde o resultado do processamento no email informado no cadastro.</p>
-                    <div class="d-flex justify-content-center">
-                        <button type="button" class="btn btn-primary px-5 py-2" id="newSubmissionButton">Nova inscrição</button>
-                    </div>
-                </div>
-            </div>
         </section>
 
         <!-- Tab: Documentação -->
         <section id="documentacao" class="tab-content">
+          <div id="documentacaoContent">
             <div class="section-header">
                 <h2 class="section-title">Anexo de Documentação</h2>
                 <p class="text-muted">Por favor, envie todos os documentos obrigatórios para validar sua inscrição.</p>
@@ -1582,6 +1573,17 @@
                   <button type="button" class="btn btn-primary btn-lg w-100 py-3 mt-2" id="finalSubmitBtn" onclick="validateAndSubmit()">
                       <i class="fas fa-paper-plane me-2"></i>Concluir e Enviar Inscrição
                   </button>
+              </div>
+          </div>
+          </div><!-- /#documentacaoContent -->
+          <div class="submission-success" id="submissionSuccess" aria-live="polite">
+              <div class="card p-5 text-center">
+                  <div class="success-animation">🎉</div>
+                  <h2 class="mb-3">Sua inscrição está sendo processada!</h2>
+                  <p class="text-muted mb-4">Aguarde o resultado do processamento no email informado no cadastro.</p>
+                  <div class="d-flex justify-content-center">
+                      <button type="button" class="btn btn-primary px-5 py-2" id="newSubmissionButton">Nova inscrição</button>
+                  </div>
               </div>
           </div>
         </section>
@@ -2965,6 +2967,11 @@
       if (wizardShell) {
         wizardShell.classList.add('d-none');
       }
+      showTab('documentacao');
+      const docContent = document.getElementById('documentacaoContent');
+      if (docContent) {
+        docContent.classList.add('d-none');
+      }
       if (successScreen) {
         successScreen.classList.add('show');
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2992,6 +2999,13 @@
         }
         sanitized.append(key, value);
       }
+      // Collect file inputs from documentacao tab (outside the form element)
+      document.querySelectorAll('.upload-input').forEach((input) => {
+        const fieldName = input.dataset.formField || input.id;
+        if (fieldName && input.files && input.files[0]) {
+          sanitized.append(fieldName, input.files[0]);
+        }
+      });
       return sanitized;
     };
 
