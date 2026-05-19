@@ -763,9 +763,6 @@
                 <a href="#" class="nav-link active" data-tab="inscricao"><i class="fas fa-edit"></i><span>Inscrição</span></a>
             </div>
             <div class="nav-item">
-                <a href="#" class="nav-link" data-tab="documentacao"><i class="fas fa-file-upload"></i><span>Documentação</span></a>
-            </div>
-            <div class="nav-item">
                 <a href="#" class="nav-link" data-tab="resumo"><i class="fas fa-clipboard-list"></i><span>Resumo</span></a>
             </div>
             <div class="nav-item">
@@ -830,6 +827,10 @@
                     </li>
                     <li class="wizard-step" data-step="4">
                         <span class="wizard-index" data-step-index="5">5</span>
+                        <span class="wizard-label">Documentação</span>
+                    </li>
+                    <li class="wizard-step" data-step="5">
+                        <span class="wizard-index" data-step-index="6">6</span>
                         <span class="wizard-label">Revisão</span>
                     </li>
                 </ol>
@@ -1334,7 +1335,7 @@
                   <option value="Não">Não</option>
                 </select>
                 <div id="ppniDocsInfo" class="form-text mt-1 hidden text-primary fw-bold">
-                  * Você deverá anexar a documentação de heteroidentificação na aba "Documentação".
+                  * Você deverá anexar a documentação de heteroidentificação na etapa "Documentação".
                 </div>
               </div>
               <div class="col-md-4">
@@ -1384,6 +1385,141 @@
 
       <section class="card step-card d-none" data-step-panel="4">
         <div class="card-header">
+          <h2>Documentação obrigatória</h2>
+        </div>
+        <div class="card-body">
+          <div class="section-block">
+            <h3 class="section-title">Documentos pessoais</h3>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 upload-row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="upload-card required" data-upload-card>
+                  <div class="upload-emoji" aria-hidden="true">🪪</div>
+                  <p class="upload-title">Documento de identificação (frente)</p>
+                  <p class="upload-instruction">Anexe apenas arquivo em PDF.</p>
+                  <input type="file" class="upload-input" id="doc_id_frente" data-form-field="doc_id_frente" accept=".pdf" required aria-label="Documento de identificação (frente)" />
+                  <label class="upload-button" for="doc_id_frente">Selecionar arquivo</label>
+                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
+                </div>
+              </div>
+              <div class="col-sm-6 col-lg-4">
+                <div class="upload-card required" data-upload-card>
+                  <div class="upload-emoji" aria-hidden="true">🪪</div>
+                  <p class="upload-title">Documento de identificação (verso)</p>
+                  <p class="upload-instruction">Anexe apenas arquivo em PDF.</p>
+                  <input type="file" class="upload-input" id="doc_id_verso" data-form-field="doc_id_verso" accept=".pdf" required aria-label="Documento de identificação (verso)" />
+                  <label class="upload-button" for="doc_id_verso">Selecionar arquivo</label>
+                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
+                </div>
+              </div>
+              <div class="col-sm-6 col-lg-4">
+                <div class="upload-card required" data-upload-card>
+                  <div class="upload-emoji" aria-hidden="true">🧾</div>
+                  <p class="upload-title">CPF</p>
+                  <p class="upload-instruction">Anexe apenas arquivo em PDF.</p>
+                  <input type="file" class="upload-input" id="doc_cpf" data-form-field="doc_cpf" accept=".pdf" required aria-label="CPF" />
+                  <label class="upload-button" for="doc_cpf">Selecionar arquivo</label>
+                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
+                </div>
+              </div>
+              <div class="col-sm-6 col-lg-4">
+                <div class="upload-card required" data-upload-card>
+                  <div class="upload-emoji" aria-hidden="true">🏠</div>
+                  <p class="upload-title">Comprovante de residência</p>
+                  <p class="upload-instruction">Anexe apenas arquivo em PDF.</p>
+                  <input type="file" class="upload-input" id="doc_residencia" data-form-field="doc_residencia" accept=".pdf" required aria-label="Comprovante de residência" />
+                  <label class="upload-button" for="doc_residencia">Selecionar arquivo</label>
+                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
+                </div>
+              </div>
+              <div class="col-sm-6 col-lg-4">
+                <div class="upload-card required" data-upload-card>
+                  <div class="upload-emoji" aria-hidden="true">🗳️</div>
+                  <p class="upload-title">Quitação eleitoral</p>
+                  <p class="upload-instruction">Anexe apenas arquivo em PDF.</p>
+                  <input type="file" class="upload-input" id="doc_quitacao_eleitoral" data-form-field="doc_quitacao_eleitoral" accept=".pdf" required aria-label="Quitação eleitoral" />
+                  <label class="upload-button" for="doc_quitacao_eleitoral">Selecionar arquivo</label>
+                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
+                </div>
+              </div>
+              <div class="col-sm-6 col-lg-4 hidden" id="docMilitarGroup">
+                <div class="upload-card" data-upload-card>
+                  <div class="upload-emoji" aria-hidden="true">🎖️</div>
+                  <p class="upload-title">Quitação do serviço militar</p>
+                  <p class="upload-instruction">Candidatos do sexo masculino. Anexe apenas arquivo em PDF.</p>
+                  <input type="file" class="upload-input" id="doc_militar" data-form-field="doc_militar" accept=".pdf" data-force-required="true" aria-label="Quitação do serviço militar" />
+                  <label class="upload-button" for="doc_militar">Selecionar arquivo</label>
+                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
+                </div>
+              </div>
+              <div class="col-sm-6 col-lg-4 hidden" id="docPpniGroup">
+                <div class="upload-card" data-upload-card>
+                  <div class="upload-emoji" aria-hidden="true">✊🏾</div>
+                  <p class="upload-title">Heteroidentificação (PPNI)</p>
+                  <p class="upload-instruction">Conforme edital. Anexe arquivo em PDF.</p>
+                  <input type="file" class="upload-input" id="doc_ppni" data-form-field="doc_ppni" accept=".pdf" data-force-required="true" aria-label="Documentação de Heteroidentificação" />
+                  <label class="upload-button" for="doc_ppni">Selecionar arquivo</label>
+                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
+                </div>
+              </div>
+              <div class="col-sm-6 col-lg-4 hidden" id="docPcdGroup">
+                <div class="upload-card" data-upload-card>
+                  <div class="upload-emoji" aria-hidden="true">♿</div>
+                  <p class="upload-title">Laudo Médico (PCD)</p>
+                  <p class="upload-instruction">Conforme edital. Anexe arquivo em PDF.</p>
+                  <input type="file" class="upload-input" id="doc_pcd" data-form-field="doc_pcd" accept=".pdf" data-force-required="true" aria-label="Laudo Médico PCD" />
+                  <label class="upload-button" for="doc_pcd">Selecionar arquivo</label>
+                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
+                </div>
+              </div>
+              <div class="col-sm-6 col-lg-4 hidden" id="docJuradoGroup">
+                <div class="upload-card" data-upload-card>
+                  <div class="upload-emoji" aria-hidden="true">⚖️</div>
+                  <p class="upload-title">Certificado de Jurado(a)</p>
+                  <p class="upload-instruction">Comprovação de atuação. Anexe arquivo em PDF.</p>
+                  <input type="file" class="upload-input" id="doc_jurado" data-form-field="doc_jurado" accept=".pdf" data-force-required="true" aria-label="Documentação de Jurado" />
+                  <label class="upload-button" for="doc_jurado">Selecionar arquivo</label>
+                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="section-block">
+            <h3 class="section-title">Comprovação profissional</h3>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 upload-row">
+              <div class="col-sm-6 col-lg-4">
+                <div class="upload-card required" data-upload-card>
+                  <div class="upload-emoji" aria-hidden="true">🎓</div>
+                  <p class="upload-title">Requisitos Básicos de Escolaridade</p>
+                  <p class="upload-instruction">Requisitos mínimos exigidos para a função escolhida. Anexe um único arquivo em PDF.</p>
+                  <input type="file" class="upload-input" id="doc_escolaridade" data-form-field="doc_escolaridade" accept=".pdf" required aria-label="Requisitos básicos de escolaridade" />
+                  <label class="upload-button" for="doc_escolaridade">Selecionar arquivo</label>
+                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
+                </div>
+              </div>
+              <div class="col-sm-6 col-lg-4">
+                <div class="upload-card required" data-upload-card>
+                  <div class="upload-emoji" aria-hidden="true">📁</div>
+                  <p class="upload-title">Comprovação de Titulação e Experiência Profissional</p>
+                  <p class="upload-instruction">Comprovação de títulos acadêmicos e experiência exigidos para pontuação no Edital. Anexe um único arquivo em PDF.</p>
+                  <input type="file" class="upload-input" id="doc_curriculo" data-form-field="doc_curriculo" accept=".pdf" required aria-label="Comprovação de titulação e experiência profissional" />
+                  <label class="upload-button" for="doc_curriculo">Selecionar arquivo</label>
+                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-transparent border-top-0 pt-0">
+          <div class="wizard-controls">
+            <button type="button" class="btn btn-outline-secondary" data-action="prev">Voltar</button>
+            <div class="spacer"></div>
+            <button type="button" class="btn btn-primary" data-action="next">Avançar para Revisão</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card step-card d-none" data-step-panel="5">
+        <div class="card-header">
           <h2>Revisão e envio</h2>
         </div>
         <div class="card-body">
@@ -1413,179 +1549,32 @@
           <div class="wizard-controls">
             <button type="button" class="btn btn-outline-secondary" data-action="prev">Voltar</button>
             <div class="spacer"></div>
-            <button type="button" class="btn btn-primary" id="btnAvancarDocs" onclick="avancarParaDocumentacao()">
-              Avançar para Documentação
+            <button type="button" class="btn btn-primary" id="finalSubmitBtn" onclick="validateAndSubmit()">
+              <i class="fas fa-paper-plane me-2"></i>Concluir e Enviar Inscrição
             </button>
           </div>
         </div>
       </section>
             </form>
+            <div class="submission-success" id="submissionSuccess" aria-live="polite">
+                <div class="card p-5 text-center">
+                    <div class="success-animation">🎉</div>
+                    <h2 class="mb-3">Sua inscrição está sendo processada!</h2>
+                    <p class="text-muted mb-4">Aguarde o resultado do processamento no email informado no cadastro.</p>
+                    <div class="d-flex justify-content-center">
+                        <button type="button" class="btn btn-primary px-5 py-2" id="newSubmissionButton">Nova inscrição</button>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <!-- Tab: Documentação -->
+        <!-- Tab: Documentação (conteúdo movido para etapa 5 do wizard de inscrição) -->
         <section id="documentacao" class="tab-content">
-          <div id="documentacaoContent">
-            <div class="section-header">
-                <h2 class="section-title">Anexo de Documentação</h2>
-                <p class="text-muted">Por favor, envie todos os documentos obrigatórios para validar sua inscrição.</p>
-            </div>
-
-          <div class="section-block">
-            <h3 class="section-title">Documentos pessoais</h3>
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 upload-row">
-              <div class="col-sm-6 col-lg-4">
-                <div class="upload-card required" data-upload-card>
-                  <div class="upload-emoji" aria-hidden="true">🪪</div>
-                  <p class="upload-title">Documento de identificação (frente)</p>
-                  <p class="upload-instruction">Anexe apenas arquivo em PDF.</p>
-                  <input type="file" class="upload-input" id="doc_id_frente" data-form-field="doc_id_frente" accept=".pdf" required
-                    aria-label="Documento de identificação (frente)" />
-                  <label class="upload-button" for="doc_id_frente">Selecionar arquivo</label>
-                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
-                </div>
-              </div>
-              <div class="col-sm-6 col-lg-4">
-                <div class="upload-card required" data-upload-card>
-                  <div class="upload-emoji" aria-hidden="true">🪪</div>
-                  <p class="upload-title">Documento de identificação (verso)</p>
-                  <p class="upload-instruction">Anexe apenas arquivo em PDF.</p>
-                  <input type="file" class="upload-input" id="doc_id_verso" data-form-field="doc_id_verso" accept=".pdf" required
-                    aria-label="Documento de identificação (verso)" />
-                  <label class="upload-button" for="doc_id_verso">Selecionar arquivo</label>
-                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
-                </div>
-              </div>
-              <div class="col-sm-6 col-lg-4">
-                <div class="upload-card required" data-upload-card>
-                  <div class="upload-emoji" aria-hidden="true">🧾</div>
-                  <p class="upload-title">CPF</p>
-                  <p class="upload-instruction">Anexe apenas arquivo em PDF.</p>
-                  <input type="file" class="upload-input" id="doc_cpf" data-form-field="doc_cpf" accept=".pdf" required
-                    aria-label="CPF" />
-                  <label class="upload-button" for="doc_cpf">Selecionar arquivo</label>
-                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
-                </div>
-              </div>
-              <div class="col-sm-6 col-lg-4">
-                <div class="upload-card required" data-upload-card>
-                  <div class="upload-emoji" aria-hidden="true">🏠</div>
-                  <p class="upload-title">Comprovante de residência</p>
-                  <p class="upload-instruction">Anexe apenas arquivo em PDF.</p>
-                  <input type="file" class="upload-input" id="doc_residencia" data-form-field="doc_residencia" accept=".pdf"
-                    required aria-label="Comprovante de residência" />
-                  <label class="upload-button" for="doc_residencia">Selecionar arquivo</label>
-                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
-                </div>
-              </div>
-              <div class="col-sm-6 col-lg-4">
-                <div class="upload-card required" data-upload-card>
-                  <div class="upload-emoji" aria-hidden="true">🗳️</div>
-                  <p class="upload-title">Quitação eleitoral</p>
-                  <p class="upload-instruction">Anexe apenas arquivo em PDF.</p>
-                  <input type="file" class="upload-input" id="doc_quitacao_eleitoral" data-form-field="doc_quitacao_eleitoral"
-                    accept=".pdf" required aria-label="Quitação eleitoral" />
-                  <label class="upload-button" for="doc_quitacao_eleitoral">Selecionar arquivo</label>
-                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
-                </div>
-              </div>
-              <div class="col-sm-6 col-lg-4 hidden" id="docMilitarGroup">
-                <div class="upload-card" data-upload-card>
-                  <div class="upload-emoji" aria-hidden="true">🎖️</div>
-                  <p class="upload-title">Quitação do serviço militar</p>
-                  <p class="upload-instruction">Candidatos do sexo masculino. Anexe apenas arquivo em PDF.</p>
-                  <input type="file" class="upload-input" id="doc_militar" data-form-field="doc_militar" accept=".pdf"
-                    data-force-required="true" aria-label="Quitação do serviço militar" />
-                  <label class="upload-button" for="doc_militar">Selecionar arquivo</label>
-                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
-                </div>
-              </div>
-              <div class="col-sm-6 col-lg-4 hidden" id="docPpniGroup">
-                <div class="upload-card" data-upload-card>
-                  <div class="upload-emoji" aria-hidden="true">✊🏾</div>
-                  <p class="upload-title">Heteroidentificação (PPNI)</p>
-                  <p class="upload-instruction">Conforme edital. Anexe arquivo em PDF.</p>
-                  <input type="file" class="upload-input" id="doc_ppni" data-form-field="doc_ppni" accept=".pdf"
-                    data-force-required="true" aria-label="Documentação de Heteroidentificação" />
-                  <label class="upload-button" for="doc_ppni">Selecionar arquivo</label>
-                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
-                </div>
-              </div>
-              <div class="col-sm-6 col-lg-4 hidden" id="docPcdGroup">
-                <div class="upload-card" data-upload-card>
-                  <div class="upload-emoji" aria-hidden="true">♿</div>
-                  <p class="upload-title">Laudo Médico (PCD)</p>
-                  <p class="upload-instruction">Conforme edital. Anexe arquivo em PDF.</p>
-                  <input type="file" class="upload-input" id="doc_pcd" data-form-field="doc_pcd" accept=".pdf"
-                    data-force-required="true" aria-label="Laudo Médico PCD" />
-                  <label class="upload-button" for="doc_pcd">Selecionar arquivo</label>
-                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
-                </div>
-              </div>
-              <div class="col-sm-6 col-lg-4 hidden" id="docJuradoGroup">
-                <div class="upload-card" data-upload-card>
-                  <div class="upload-emoji" aria-hidden="true">⚖️</div>
-                  <p class="upload-title">Certificado de Jurado(a)</p>
-                  <p class="upload-instruction">Comprovação de atuação. Anexe arquivo em PDF.</p>
-                  <input type="file" class="upload-input" id="doc_jurado" data-form-field="doc_jurado" accept=".pdf"
-                    data-force-required="true" aria-label="Documentação de Jurado" />
-                  <label class="upload-button" for="doc_jurado">Selecionar arquivo</label>
-                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
-                </div>
-              </div>
-            </div>
+          <div class="section-header">
+            <h2 class="section-title">Documentação</h2>
+            <p class="text-muted">Acesse a aba <strong>Inscrição</strong> e avance até a etapa <strong>Documentação</strong> para anexar seus documentos.</p>
           </div>
-
-          <div class="section-block">
-            <h3 class="section-title">Comprovação profissional</h3>
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 upload-row">
-              <div class="col-sm-6 col-lg-4">
-                <div class="upload-card required" data-upload-card>
-                  <div class="upload-emoji" aria-hidden="true">🎓</div>
-                  <p class="upload-title">Requisitos Básicos de Escolaridade</p>
-                  <p class="upload-instruction">Requisitos mínimos exigidos para a função escolhida. Anexe um único arquivo em PDF.</p>
-                  <input type="file" class="upload-input" id="doc_escolaridade" data-form-field="doc_escolaridade" accept=".pdf"
-                    required aria-label="Requisitos básicos de escolaridade" />
-                  <label class="upload-button" for="doc_escolaridade">Selecionar arquivo</label>
-                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
-                </div>
-              </div>
-              <div class="col-sm-6 col-lg-4">
-                <div class="upload-card required" data-upload-card>
-                  <div class="upload-emoji" aria-hidden="true">📁</div>
-                  <p class="upload-title">Comprovação de Titulação e Experiência Profissional</p>
-                  <p class="upload-instruction">Comprovação de títulos acadêmicos e experiência exigidos para pontuação no Edital. Anexe um único arquivo em PDF.</p>
-                  <input type="file" class="upload-input" id="doc_curriculo" data-form-field="doc_curriculo" accept=".pdf" required
-                    aria-label="Comprovação de titulação e experiência profissional" />
-                  <label class="upload-button" for="doc_curriculo">Selecionar arquivo</label>
-                  <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="section-block mt-5">
-              <div class="card bg-light border-0 p-4">
-                  <div class="d-flex align-items-center gap-3 mb-3">
-                      <div class="bg-primary text-white p-3 rounded-circle"><i class="fas fa-check-circle fa-2x"></i></div>
-                      <h3 class="mb-0">Finalizar Inscrição</h3>
-                  </div>
-                  <p>Após conferir seus dados e anexar os documentos, clique no botão abaixo para submeter sua participação.</p>
-                  <button type="button" class="btn btn-primary btn-lg w-100 py-3 mt-2" id="finalSubmitBtn" onclick="validateAndSubmit()">
-                      <i class="fas fa-paper-plane me-2"></i>Concluir e Enviar Inscrição
-                  </button>
-              </div>
-          </div>
-          </div><!-- /#documentacaoContent -->
-          <div class="submission-success" id="submissionSuccess" aria-live="polite">
-              <div class="card p-5 text-center">
-                  <div class="success-animation">🎉</div>
-                  <h2 class="mb-3">Sua inscrição está sendo processada!</h2>
-                  <p class="text-muted mb-4">Aguarde o resultado do processamento no email informado no cadastro.</p>
-                  <div class="d-flex justify-content-center">
-                      <button type="button" class="btn btn-primary px-5 py-2" id="newSubmissionButton">Nova inscrição</button>
-                  </div>
-              </div>
-          </div>
+        </section>
         </section>
 
         <!-- Tab: Resumo -->
@@ -2967,11 +2956,6 @@
       if (wizardShell) {
         wizardShell.classList.add('d-none');
       }
-      showTab('documentacao');
-      const docContent = document.getElementById('documentacaoContent');
-      if (docContent) {
-        docContent.classList.add('d-none');
-      }
       if (successScreen) {
         successScreen.classList.add('show');
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -3099,8 +3083,8 @@
 
 
     const validateAndSubmit = () => {
-        // Check files in documentacao tab
-        const docTab = document.getElementById('documentacao');
+        // Check files in documentacao step (step-panel="4")
+        const docTab = document.querySelector('[data-step-panel="4"]');
         const invalidFields = collectInvalidFields(docTab);
         
         if (invalidFields.length > 0) {
