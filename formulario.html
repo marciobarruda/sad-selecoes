@@ -975,7 +975,7 @@
                 </select>
               </div>
               <div class="col-md-4">
-                <label for="nis" class="form-label">NIS</label>
+                <label for="nis" class="form-label">PIS/PASEP/NIT</label>
                 <input type="text" class="form-control" id="nis" name="nis" maxlength="11" inputmode="numeric"
                   pattern="\d{0,11}" title="Informe apenas números (até 11 dígitos)" data-numeric-only="true"
                   value="{{ $json.nis }}" />
@@ -1497,9 +1497,9 @@
               <div class="col-sm-6 col-lg-4">
                 <div class="upload-card required" data-upload-card>
                   <div class="upload-emoji" aria-hidden="true">🗳️</div>
-                  <p class="upload-title">Quitação eleitoral</p>
-                  <p class="upload-instruction">Anexe apenas arquivo em PDF.</p>
-                  <input type="file" class="upload-input" id="doc_quitacao_eleitoral" data-form-field="doc_quitacao_eleitoral" accept=".pdf" required aria-label="Quitação eleitoral" />
+                  <p class="upload-title">Comprovante de Quitação Eleitoral</p>
+                  <p class="upload-instruction">Anexe apenas arquivo em PDF. Emita pelo <a href="https://www.tse.jus.br/servicos-eleitorais/autoatendimento-eleitoral#/" target="_blank" rel="noopener noreferrer">site do TSE</a>.</p>
+                  <input type="file" class="upload-input" id="doc_quitacao_eleitoral" data-form-field="doc_quitacao_eleitoral" accept=".pdf" required aria-label="Comprovante de Quitação Eleitoral" />
                   <label class="upload-button" for="doc_quitacao_eleitoral">Selecionar arquivo</label>
                   <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
                 </div>
@@ -1507,9 +1507,9 @@
               <div class="col-sm-6 col-lg-4 hidden" id="docMilitarGroup">
                 <div class="upload-card" data-upload-card>
                   <div class="upload-emoji" aria-hidden="true">🎖️</div>
-                  <p class="upload-title">Quitação do serviço militar</p>
+                  <p class="upload-title">Comprovante de Quitação do Serviço Militar</p>
                   <p class="upload-instruction">Candidatos do sexo masculino. Anexe apenas arquivo em PDF.</p>
-                  <input type="file" class="upload-input" id="doc_militar" data-form-field="doc_militar" accept=".pdf" data-force-required="true" aria-label="Quitação do serviço militar" />
+                  <input type="file" class="upload-input" id="doc_militar" data-form-field="doc_militar" accept=".pdf" data-force-required="true" aria-label="Comprovante de Quitação do Serviço Militar" />
                   <label class="upload-button" for="doc_militar">Selecionar arquivo</label>
                   <p class="upload-filename" data-upload-filename>Nenhum arquivo selecionado</p>
                 </div>
