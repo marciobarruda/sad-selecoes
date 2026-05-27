@@ -2207,7 +2207,11 @@
     const countdownTimer = document.getElementById('countdownTimer');
     const submitButton = form?.querySelector('button[type="submit"]');
     const REGISTRATION_START = new Date('{{ $json.inicio_inscricoes }}');
-    const REGISTRATION_END = new Date('{{ $json.termino_inscricoes }}');
+    const REGISTRATION_END = (() => {
+      const d = new Date('{{ $json.termino_inscricoes }}');
+      if (!isNaN(d.getTime())) d.setHours(23, 59, 59, 999);
+      return d;
+    })();
     let countdownInterval;
     let hasSubmitted = false;
 
