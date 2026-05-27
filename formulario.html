@@ -2208,9 +2208,12 @@
     const submitButton = form?.querySelector('button[type="submit"]');
     const REGISTRATION_START = new Date('{{ $json.inicio_inscricoes }}');
     const REGISTRATION_END = (() => {
-      const d = new Date('{{ $json.termino_inscricoes }}');
-      if (!isNaN(d.getTime())) d.setHours(23, 59, 59, 999);
-      return d;
+      const raw = '{{ $json.termino_inscricoes }}';
+      if (!raw || raw.startsWith('{{')) return new Date('invalid');
+      // Extrai só YYYY-MM-DD e cria fim do dia em horário local (sem conversão UTC)
+      const dateOnly = raw.substring(0, 10);
+      const d = new Date(dateOnly + 'T23:59:59');
+      return isNaN(d.getTime()) ? new Date('invalid') : d;
     })();
     let countdownInterval;
     let hasSubmitted = false;
