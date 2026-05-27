@@ -2453,7 +2453,14 @@
           addItemToMap(raw);
         }
       } catch (e) {
-        value.split(';').forEach(sub => processStringToken(sub.trim()));
+        // n8n serializa arrays como string com vírgula: "Nivel|Cargo|Esp,Nivel2|Cargo2|Esp2"
+        // Se algum segmento contém pipe, trata cada parte da vírgula como entrada separada
+        const commaParts = value.split(',').map(s => s.trim()).filter(Boolean);
+        if (commaParts.some(p => p.includes('|'))) {
+          commaParts.forEach(sub => processStringToken(sub));
+        } else {
+          value.split(';').forEach(sub => processStringToken(sub.trim()));
+        }
       }
       return map;
     };
@@ -4086,23 +4093,36 @@
     };
 
     const buildResumoCard = (item, index) => {
-      const card = document.createElement('div');
-      card.className = 'card mb-4';
+      const wrapper = document.createElement('div');
+      wrapper.className = 'card mb-4';
 
+      // Cabeçalho do card com inscrição e cargo
       const header = document.createElement('div');
-      header.className = 'card-header';
-      const notaBadge = (item.nota != null && item.nota !== '') ? `<span class="badge bg-primary fs-6 ms-2">Nota: ${item.nota}</span>` : '';
-      header.innerHTML = `
-        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
-          <div>
-            <h5 class="mb-1 fw-bold text-primary">${item.inscricao || `Inscrição ${index + 1}`}${notaBadge}</h5>
-            <div class="text-muted small">${item.cargo || '—'} ${item.especialidade ? '— ' + item.especialidade : ''}</div>
-          </div>
-        </div>`;
-      card.appendChild(header);
+      header.className = 'card-header bg-white border-bottom py-3';
+      const hRow = document.createElement('div');
+      hRow.className = 'd-flex justify-content-between align-items-start flex-wrap gap-2';
+      const hLeft = document.createElement('div');
+      const h5 = document.createElement('h5');
+      h5.className = 'mb-1 fw-bold text-primary';
+      h5.textContent = item.inscricao ? `Inscrição Nº ${item.inscricao}` : `Inscrição ${index + 1}`;
+      if (item.nota != null && item.nota !== '') {
+        const badge = document.createElement('span');
+        badge.className = 'badge bg-primary ms-2';
+        badge.textContent = `Nota: ${item.nota}`;
+        h5.appendChild(badge);
+      }
+      const sub = document.createElement('div');
+      sub.className = 'text-muted small';
+      sub.textContent = [item.cargo, item.especialidade].filter(Boolean).join(' — ') || '';
+      hLeft.appendChild(h5);
+      hLeft.appendChild(sub);
+      hRow.appendChild(hLeft);
+      header.appendChild(hRow);
+      wrapper.appendChild(header);
 
+      // Corpo com section-blocks iguais ao formulário
       const body = document.createElement('div');
-      body.className = 'card-body';
+      body.className = 'card-body p-4';
 
       const grouped = {};
       RESUMO_GROUP_ORDER.forEach((g) => { grouped[g] = []; });
@@ -4116,36 +4136,63 @@
         const dedupKey = def.group + ':' + def.label;
         if (seen.has(dedupKey)) return;
         seen.add(dedupKey);
-        if (!grouped[def.group]) grouped[def.group] = [];
         grouped[def.group].push({ label: def.label, value: formatted });
       });
 
       RESUMO_GROUP_ORDER.forEach((groupName) => {
         const fields = grouped[groupName];
         if (!fields || !fields.length) return;
-        const section = document.createElement('div');
-        section.className = 'summary-section';
-        const heading = document.createElement('h3');
-        heading.textContent = groupName;
-        section.appendChild(heading);
-        const table = document.createElement('table');
-        table.className = 'summary-table';
+
+        const block = document.createElement('div');
+        block.className = 'section-block';
+
+        const title = document.createElement('h3');
+        title.className = 'section-title';
+        title.textContent = groupName;
+        block.appendChild(title);
+
+        const row = document.createElement('div');
+        row.className = 'row g-3';
+
         fields.forEach(({ label, value }) => {
-          const row = document.createElement('tr');
-          const th = document.createElement('th');
-          th.textContent = label;
-          const td = document.createElement('td');
-          td.textContent = value;
-          row.appendChild(th);
-          row.appendChild(td);
-          table.appendChild(row);
+          const isLong = value.length > 80;
+          const col = document.createElement('div');
+          col.className = isLong ? 'col-12' : 'col-12 col-md-4';
+
+          const lbl = document.createElement('label');
+          lbl.className = 'form-label';
+          lbl.textContent = label;
+
+          if (isLong) {
+            const ta = document.createElement('textarea');
+            ta.className = 'form-control';
+            ta.readOnly = true;
+            ta.rows = 3;
+            ta.style.backgroundColor = '#f8f9fb';
+            ta.style.resize = 'none';
+            ta.value = value;
+            col.appendChild(lbl);
+            col.appendChild(ta);
+          } else {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'form-control';
+            input.readOnly = true;
+            input.style.backgroundColor = '#f8f9fb';
+            input.value = value;
+            col.appendChild(lbl);
+            col.appendChild(input);
+          }
+
+          row.appendChild(col);
         });
-        section.appendChild(table);
-        body.appendChild(section);
+
+        block.appendChild(row);
+        body.appendChild(block);
       });
 
-      card.appendChild(body);
-      return card;
+      wrapper.appendChild(body);
+      return wrapper;
     };
 
     const loadResumoInscricoes = async () => {
