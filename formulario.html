@@ -2137,7 +2137,7 @@
         logoutBtn.addEventListener('click', () => {
           const token = document.getElementById('token')?.value || '';
           if (token && !isRawTemplate(token)) {
-            window.location.href = `https://login.recife.pe.gov.br/auth/realms/recife/protocol/openid-connect/logout?redirect_uri=${encodeURIComponent(window.location.origin)}`;
+            window.location.href = `https://login.recife.pe.gov.br/auth/realms/recife/protocol/openid-connect/auth?response_type=code&redirect_uri=https%3A%2F%2Fsad.recife.pe.gov.br%2Fselecoes&client_id=sad-selecoes&nonce=00365460-67b6-4a7c-91c1-c58517600a0c&state=e8e1a34e-4b34-46f3-bad1-65adcf47583b&scope=openid`;
           } else {
             window.location.reload();
           }
@@ -2284,24 +2284,25 @@
     const preRegModal = document.getElementById('preRegistrationModal');
     const preRegCountdown = document.getElementById('preRegCountdown');
     const closePreRegButton = document.getElementById('closePreRegModal');
-    const mainContent = document.querySelector('main.frame-card');
+    const mainContent = document.querySelector('.main-content');
     const wizardShell = document.querySelector('.wizard-shell');
     let preRegCountdownInterval;
 
     const updatePreRegCountdown = () => {
-      if (!preRegCountdown) return;
+      const preRegCountdownEl = document.getElementById('preRegCountdown');
+      if (!preRegCountdownEl) return;
       const now = new Date();
       const remaining = REGISTRATION_START - now;
 
       if (remaining <= 0) {
-        preRegCountdown.textContent = 'Abrindo...';
+        preRegCountdownEl.textContent = 'Abrindo...';
         if (preRegCountdownInterval) {
           clearInterval(preRegCountdownInterval);
         }
         return;
       }
 
-      preRegCountdown.textContent = formatRemainingTime(remaining);
+      preRegCountdownEl.textContent = formatRemainingTime(remaining);
     };
 
     const checkRegistrationStatus = () => {
@@ -4968,7 +4969,7 @@
             blockStyle = document.createElement('style');
             blockStyle.id = 'blocked-mode-style';
             blockStyle.innerHTML = `
-                main.frame-card, header.site-header, .wizard-shell, .site-footer {
+                .main-content, header.site-header, .wizard-shell, .site-footer {
                     filter: blur(8px) !important;
                     pointer-events: none !important;
                     user-select: none !important;
