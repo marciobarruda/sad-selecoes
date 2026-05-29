@@ -362,8 +362,11 @@
 
                         const stage = (item.etapa_atual || '').toLowerCase().trim();
 
-                        // Ativos sem edital publicado não aparecem na listagem
-                        if (statusLower === "ativo" && stage === "aguardando publicação de edital") return;
+                        // Se for ativo e o cronograma não tiver iniciado (aguardando edital ou vazio)
+                        let isAguardandoInicio = false;
+                        if (statusLower === "ativo" && (stage === "aguardando publicação de edital" || stage === "")) {
+                            isAguardandoInicio = true;
+                        }
 
                         // Certames concluídos aparecem com estilo diferenciado mas clicáveis
                         const isInactive = isConcluido;
@@ -379,11 +382,14 @@
                         nameSpan.textContent = name;
                         btn.appendChild(nameSpan);
 
-                        let etapaText = "";
-                        if (item.etapa_atual) {
+                        let etapaText = item.etapa_atual || "";
+                        if (isAguardandoInicio) {
+                            etapaText = "Aguardando início das inscrições";
+                        }
+
+                        if (etapaText) {
                             const tagSpan = document.createElement('span');
                             tagSpan.className = 'selection-tag';
-                            etapaText = item.etapa_atual;
                             tagSpan.textContent = `Etapa: ${etapaText}`;
                             btn.appendChild(tagSpan);
                         }
